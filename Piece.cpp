@@ -2,10 +2,7 @@
 #include "Piece.h"
 
 Piece::Piece(){
-    x = 0;
-    y = 0;
-    id = 0;
-    color = 0;
+    int x,y,color,id;
 }
 
 Piece::Piece(int X, int Y, int C, int ID){

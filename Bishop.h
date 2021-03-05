@@ -3,9 +3,12 @@
 
 #include "Piece.h"
 
-class Bishop: private Piece {
+class Bishop: public Piece {
 
     public:
+        Bishop();
+        Bishop(int , int , int , int );
+
         bool legal_move(int i,int j);
         
             

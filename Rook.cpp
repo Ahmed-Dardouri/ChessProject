@@ -1,15 +1,13 @@
 #include "Rook.h"
 #include <cmath>
 #include "Piece.h"
-#include <iostream>
-using namespace std;
 
 
 Rook::Rook(int X, int Y, int C, int ID){
-    x = X;
-    y = Y;
-    id = ID;
-    color = C;
+    Piece(X,Y,C,ID);
+}
+Rook::Rook(){
+    Piece();
 }
 bool Rook::legal_move(int i,int j){
     bool ok = true;

@@ -3,10 +3,11 @@
 
 #include "Piece.h"
 
-class Rook: protected Piece {
+class Rook: public Piece {
     bool has_moved = false;
     public:
-        Rook(int X, int Y, int C, int ID);
+        Rook();
+        Rook(int , int , int , int );
         bool legal_move(int i,int j);
         bool gethm();
 };

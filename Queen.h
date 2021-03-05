@@ -3,9 +3,12 @@
 
 #include "Piece.h"
 
-class Queen: private Piece {
+class Queen: public Piece {
 
     public:
+        Queen();
+        Queen(int , int , int , int );
+
         bool legal_move(int i,int j);
 
 };
