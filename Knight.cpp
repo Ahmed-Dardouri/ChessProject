@@ -3,10 +3,10 @@
 #include "Piece.h"
 
 Knight::Knight(int X, int Y, int C, int ID){
-    Piece(X,Y,C,ID);
-}
-Knight::Knight(){
-    Piece();
+    x = X;
+    y = Y;
+    color = C;
+    id = ID;
 }
 
 bool Knight::legal_move(int i,int j){

@@ -3,10 +3,10 @@
 
 
 Pawn::Pawn(int X, int Y, int C, int ID){
-    Piece(X,Y,C,ID);
-}
-Pawn::Pawn(){
-    Piece();
+    x = X;
+    y = Y;
+    color = C;
+    id = ID;
 }
 
 bool Pawn::legal_move(int i,int j){

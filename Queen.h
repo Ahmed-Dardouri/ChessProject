@@ -6,11 +6,8 @@
 class Queen: public Piece {
 
     public:
-        Queen();
         Queen(int , int , int , int );
-
         bool legal_move(int i,int j);
-
 };
 
 #endif

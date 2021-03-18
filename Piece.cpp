@@ -1,16 +1,11 @@
 #include <cmath>
 #include "Piece.h"
 
+
 Piece::Piece(){
     int x,y,color,id;
 }
 
-Piece::Piece(int X, int Y, int C, int ID){
-    x = X;
-    y = Y;
-    id = ID;
-    color = C;
-}
 void Piece::setx(int X){
     x = X;
 }
