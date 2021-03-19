@@ -12,6 +12,7 @@ class Piece{
         int x;
         int y;
     public:
+        
         Piece();
         void setx(int X);
         void sety(int Y);
@@ -21,6 +22,11 @@ class Piece{
         bool getpin();
         int getid();
         int getcolor();
+
+        virtual int geta(){
+            return 100000;
+        }
+        
 
 };
 

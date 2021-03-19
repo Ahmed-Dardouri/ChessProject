@@ -9,8 +9,6 @@ Queen::Queen(int X, int Y, int C, int ID){
     color = C;
     id = ID;
 }
-
-
 bool Queen::legal_move(int i,int j){
     bool ok = true;
     if ((i != x) && (j != y)){ 

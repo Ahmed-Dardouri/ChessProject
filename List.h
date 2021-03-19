@@ -10,6 +10,8 @@ class List{
     public:
         List();
         void add_node(Piece n);
+        bool search(Node* head, int x);
+        Piece GetNth(Piece index);
 };
 
 
