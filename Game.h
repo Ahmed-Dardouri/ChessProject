@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <vector>
-
+#include <cmath>
 #include "Piece.h"
 #include "Knight.h"
 #include "Pawn.h"
@@ -12,6 +12,7 @@
 #include "King.h"
 #include "Rook.h"
 #include "List.h"
+#include <iomanip>
 using namespace std;
 
 class Game{
@@ -23,21 +24,18 @@ class Game{
         List targets_list;
     public:
         Game();
-        Piece * poitertopieces;
-        //void putPiece(int ID);
-        //Piece getPiece(int X,int Y);
-        //void abstractMove(int,int,int,int);
-        //void showBoard();
+        void putPiece(int ID);
+        void initiateBoard();
+        //Piece * getPiece(int X,int Y);
+        void abstractMove(int,int,int,int);
+        void showBoard();
+
         void move(int,int,int,int);
 
         bool king_in_check();
-        bool InBetween_pieces(Piece,int,int);	
+        bool InBetween_pieces(int,int,int,int);
         List scan_for_targets();
         
-        ~Game(){
-            delete[] poitertopieces;
-        }
-
 };
 
 

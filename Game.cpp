@@ -68,53 +68,102 @@ Game::Game(){
     pieces.push_back(bpf);
     pieces.push_back(bpg);
     pieces.push_back(bph);
-    
-    cout<<pieces[0]->geta()<<endl;
 
+    initiateBoard();
+    abstractMove(7,1,5,2);
+    showBoard();
 
-/*
-    for (int i = 0; i < 8;i++){
+}
+
+void Game::putPiece(int ID){
+    Board[pieces[ID]->getx()][pieces[ID]->gety()] = pieces[ID]->getid();
+}
+void Game::initiateBoard(){
+    for (int i = 2; i < 6;i++){
         for (int j = 0; j < 8;j++){
             Board[i][j] = 50;
         }
     }
     for (int i = 0; i < 32;i++){
         putPiece(i);
-    };
-    for (int i = 0; i < 8;i++){
-        for (int j = 0; j < 8;j++){
-            cout<<Board[i][j]<<" ";
-        }
-        cout<<endl;
     }
-    abstractMove(7,1,5,2);
-    
 }
-*/
-/*void Game::putPiece(int ID){
-    Piece p = pieces[ID];
-    Board[p.getx()][p.gety()] = p.getid();
-}
-Piece Game::getPiece(int X,int Y){
-    int pid = Board[X][Y];
-    return pieces[pid];
-}
+
 void Game::abstractMove(int x1,int y1,int x2,int y2){
     int pid = Board[x1][y1];
     if (pid < 32){
         Board[x1][y1] = 50;
         Board[x2][y2] = pid;
-        pieces[pid].setx(x2);
-        pieces[pid].sety(y2);
+        pieces[pid]->setx(x2);
+        pieces[pid]->sety(y2);
     }
 }
-/*void Game::showBoard(){
+
+void Game::showBoard(){
+    cout<<endl;
     for (int i = 0; i < 8;i++){
         for (int j = 0; j < 8;j++){
-
-            cout<<Board[i][j]<<setw(4)<<" ";
+            cout<<setw(4);
+            cout<<Board[i][j];
         }
         cout<<endl;
     }
-*/
+    cout<<endl;
+}
+bool Game::InBetween_pieces(int x1,int y1,int x2,int y2){
+    int pid = Board[x1][y1];
+    if (pid < 32){
+        int c = 0;
+        int c1 = 2;
+        if (pid > 15){
+            c = 1;
+        }
+        if (x1 == x2 && y1 == y2){
+            return false;
+        }
+        if(Board[x2][y2] < 32){
+
+            if (Board[x2][y2] > 15){
+                c1 = 1;
+            }
+            else{
+                c1 = 0;
+            }
+        }
+        if (c == c1){
+            return true;
+        }
+       
+        if (x1 == x2){
+            int j = (y2-y1)/abs(y1-y2);
+            for (int i = y1 + j; abs(i-y2) > 0; i += j){
+                if (Board[x1][i] < 32){
+                    return true;
+                }
+            }
+        }
+        else if (y1 == y2){
+            int j = (x2-x1)/abs(x1-x2);
+            for (int i = x1 + j ; abs(i-x2) > 0; i += j){
+                if (Board[i][y1] < 32){
+                    return true;
+                }
+            }
+        }
+        else if (abs(x1 - x2) == abs(y1 - y2)){
+            int k = (x2-x1)/abs(x1-x2);
+            int l = (y2-y1)/abs(y1-y2);
+            int j = y1 + l;
+            for (int i = x1 + k; abs(i-x2) > 0; i += k){
+                cout<<Board[i][j]<<endl;
+                if (Board[i][j] < 32){
+                    return true;
+                }
+                j += l;
+            }
+        }            
+        
+        
+    }
+    return false;
 }
