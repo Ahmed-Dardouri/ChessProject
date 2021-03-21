@@ -26,6 +26,7 @@ class Piece{
         virtual int geta(){
             return 100000;
         }
+        virtual bool legal_move(int ,int );
         
 
 };

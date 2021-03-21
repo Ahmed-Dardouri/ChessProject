@@ -30,3 +30,6 @@ int Piece::getid(){
 int Piece::getcolor(){
     return color;
 }
+bool Piece::legal_move(int X,int Y){
+    return false;
+}

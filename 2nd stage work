@@ -6,7 +6,7 @@ move consitions:
 
     1. if the king is in check, the king has to get out of check        after the move is played (ahmed)
     
-        1. target_list (relevant to subclass)
+        1. target_list (relevant to subclass) check
         2. scan the board -> global_target_list
         3. king in check? <=> is the king in the global_target_list?
         

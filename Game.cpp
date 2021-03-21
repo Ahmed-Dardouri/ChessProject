@@ -70,9 +70,11 @@ Game::Game(){
     pieces.push_back(bph);
 
     initiateBoard();
-    abstractMove(7,1,5,2);
+    abstractMove(0,4,2,3);
+    abstractMove(7,3,5,4);
     showBoard();
-
+    cout<<king_in_check(2,4)<<endl;
+    
 }
 
 void Game::putPiece(int ID){
@@ -155,7 +157,6 @@ bool Game::InBetween_pieces(int x1,int y1,int x2,int y2){
             int l = (y2-y1)/abs(y1-y2);
             int j = y1 + l;
             for (int i = x1 + k; abs(i-x2) > 0; i += k){
-                cout<<Board[i][j]<<endl;
                 if (Board[i][j] < 32){
                     return true;
                 }
@@ -166,4 +167,57 @@ bool Game::InBetween_pieces(int x1,int y1,int x2,int y2){
         
     }
     return false;
+}
+vector <vector<int>> Game::target_Squares(int X, int Y){
+    vector <vector<int>> squaresList;
+    if (Board[X][Y] < 32){
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                
+                vector<int> square;
+                if (i != X || j != Y){
+                    if (InBetween_pieces(X,Y,i,j) == 0){
+                        int pid = Board[X][Y];
+                        if (pieces[pid]->legal_move(i,j)){
+                            square.push_back(i);
+                            square.push_back(j);
+                            squaresList.push_back(square);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return squaresList;
+}
+vector <vector<int>> Game::target_Pieces(int X, int Y){
+    vector <vector<int>> s;
+    vector <vector<int>> p;
+    s = target_Squares(X,Y);
+    for(int i=0; i < s.size(); i++){
+        if (Board[s[i][0]][s[i][1]] < 32){
+            p.push_back(s[i]);
+        }
+    }
+    return p;
+}
+bool Game::king_in_check(int X,int Y){
+    vector <vector <int>> global_Targets_List;
+    vector <vector <int>> s;
+    for (int i = 0;i < 8;i++){
+        for(int j = 0; j < 8; j++){
+            if (Board[i][j]<32){
+                s = target_Pieces(i,j);
+                global_Targets_List.insert(global_Targets_List.end(), s.begin(), s.end());
+            }
+        }
+    }
+    vector<int> kingPos = {X,Y};
+
+    for (int i = 0; i < global_Targets_List.size(); i++)
+        if (global_Targets_List[i] == kingPos) {
+            return true;
+        }
+    return false;
+ 
 }
