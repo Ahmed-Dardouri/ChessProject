@@ -170,15 +170,12 @@ vector <vector<int>> Game::target_Squares(int X1, int Y1){
     vector <vector<int>> squaresList;
     vector<int> square;
     int pid = Board[X1][Y1];
-    cout<<"check-2"<<endl;
     if (pid < 32){
-        cout<<"check-1"<<endl;
         if (typeid(*pieces[pid]) != typeid(*pieces[8])){
             for (int i = 0; i < 8; i++){
                 for (int j = 0; j < 8; j++){
                     if (i != X1 || j != Y1){
                         if (InBetween_pieces(X1,Y1,i,j) == 0){
-                            
                             if (pieces[pid]->legal_move(i,j)){
                                 square.push_back(i);
                                 square.push_back(j);
@@ -191,12 +188,10 @@ vector <vector<int>> Game::target_Squares(int X1, int Y1){
             }
         }
         else{
-            cout<<"check0"<<endl;
             if (Y1 < 7){
                 if (pieces[pid]->getcolor() == 0){
                     int rid = Board[X1-1][Y1+1];
                     if (rid < 32){
-                        cout<<"check1"<<endl;
                         if (pieces[rid]->getcolor() != pieces[pid]->getcolor()){
                             
                             square.push_back(X1-1);
@@ -211,8 +206,6 @@ vector <vector<int>> Game::target_Squares(int X1, int Y1){
                         squaresList.push_back(square);
                         square.clear();
                     }
-                    
-                    
                 }
                 else{
                     int rid = Board[X1+1][Y1+1];
@@ -231,7 +224,6 @@ vector <vector<int>> Game::target_Squares(int X1, int Y1){
                         square.clear();
                     }
                 }
-                
             }
             if (Y1 > 0){
                 if (pieces[pid]->getcolor() == 0){
@@ -250,8 +242,6 @@ vector <vector<int>> Game::target_Squares(int X1, int Y1){
                         squaresList.push_back(square);
                         square.clear();
                     }
-                    
-                    
                 }
                 else{
                     int rid = Board[X1+1][Y1-1];
@@ -286,21 +276,27 @@ vector <vector<int>> Game::target_Pieces(int X, int Y){
     }
     return p;
 }
-bool Game::king_in_check(int X,int Y){
-    vector <vector <int>> global_Targets_List;
+vector <vector<int>> Game::global_Targets_List(){
+    vector <vector <int>> gtl;
     vector <vector <int>> s;
     for (int i = 0;i < 8;i++){
         for(int j = 0; j < 8; j++){
             if (Board[i][j]<32){
                 s = target_Pieces(i,j);
-                global_Targets_List.insert(global_Targets_List.end(), s.begin(), s.end());
+                gtl.insert(gtl.end(), s.begin(), s.end());
             }
         }
     }
+    return gtl;
+}
+bool Game::king_in_check(int X,int Y){
+    vector <vector <int>> gtl;
+    gtl = global_Targets_List();
+    
     vector<int> kingPos = {X,Y};
 
-    for (int i = 0; i < global_Targets_List.size(); i++)
-        if (global_Targets_List[i] == kingPos) {
+    for (int i = 0; i < gtl.size(); i++)
+        if (gtl[i] == kingPos) {
             return true;
         }
     return false;
