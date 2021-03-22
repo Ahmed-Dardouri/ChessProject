@@ -13,6 +13,7 @@
 #include "Rook.h"
 #include "List.h"
 #include <iomanip>
+#include <typeinfo>
 using namespace std;
 
 class Game{
@@ -34,7 +35,6 @@ class Game{
 
         bool king_in_check(int,int);
         bool InBetween_pieces(int,int,int,int);
-        List scan_for_targets();
         
 };
 
