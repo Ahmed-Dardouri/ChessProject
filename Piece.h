@@ -1,5 +1,8 @@
 #ifndef PIECE_H
 #define PIECE_H
+#include <iostream>
+
+using namespace std;
 
 class Piece{
     protected:
@@ -9,8 +12,8 @@ class Piece{
         int x;
         int y;
     public:
+        
         Piece();
-        Piece(int X, int Y, int C, int ID);
         void setx(int X);
         void sety(int Y);
         void setpin(bool pin);
@@ -19,6 +22,13 @@ class Piece{
         bool getpin();
         int getid();
         int getcolor();
+
+        virtual int geta(){
+            return 100000;
+        }
+        virtual bool legal_move(int ,int );
+        
+
 };
 
 #endif

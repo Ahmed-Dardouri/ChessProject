@@ -2,12 +2,11 @@
 #include <cmath>
 #include "Piece.h"
 
-
 Rook::Rook(int X, int Y, int C, int ID){
-    Piece(X,Y,C,ID);
-}
-Rook::Rook(){
-    Piece();
+    x = X;
+    y = Y;
+    color = C;
+    id = ID;
 }
 bool Rook::legal_move(int i,int j){
     bool ok = true;
@@ -18,4 +17,7 @@ bool Rook::legal_move(int i,int j){
 }
 bool Rook::gethm(){
     return has_moved;
+}
+int Rook::geta(){
+    return a;
 }

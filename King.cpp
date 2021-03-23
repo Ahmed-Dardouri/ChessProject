@@ -4,10 +4,10 @@
 
 
 King::King(int X, int Y, int C, int ID){
-    Piece(X,Y,C,ID);
-}
-King::King(){
-    Piece();
+    x = X;
+    y = Y;
+    color = C;
+    id = ID;
 }
 
 bool King::legal_move(int i,int j){

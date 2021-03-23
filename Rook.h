@@ -5,8 +5,9 @@
 
 class Rook: public Piece {
     bool has_moved = false;
+    int a = 10;
     public:
-        Rook();
+        int geta();
         Rook(int , int , int , int );
         bool legal_move(int i,int j);
         bool gethm();
