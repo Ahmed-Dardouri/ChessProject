@@ -10,7 +10,6 @@
 #include "Queen.h"
 #include "King.h"
 #include "Rook.h"
-#include "List.h"
 #include "Game.h"
 
 
