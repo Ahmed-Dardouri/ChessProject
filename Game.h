@@ -11,7 +11,6 @@
 #include "Queen.h"
 #include "King.h"
 #include "Rook.h"
-#include "List.h"
 #include <iomanip>
 #include <typeinfo>
 using namespace std;
