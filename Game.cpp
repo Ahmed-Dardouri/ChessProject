@@ -71,8 +71,6 @@ Game::Game(){
 
     initiateBoard();
     showBoard();
-
-    
 }
 
 void Game::putPiece(int ID){
@@ -113,27 +111,17 @@ void Game::showBoard(){
 bool Game::InBetween_pieces(int x1,int y1,int x2,int y2){
     int pid = Board[x1][y1];
     if (pid < 32){
-        int c = 0;
+        int c = pieces[pid]->getcolor();
         int c1 = 2;
-        if (pid > 15){
-            c = 1;
-        }
         if (x1 == x2 && y1 == y2){
             return false;
         }
         if(Board[x2][y2] < 32){
-
-            if (Board[x2][y2] > 15){
-                c1 = 1;
-            }
-            else{
-                c1 = 0;
-            }
+            c1 = pieces[Board[x2][y2]]->getcolor();
         }
         if (c == c1){
             return true;
         }
-       
         if (x1 == x2){
             int j = (y2-y1)/abs(y1-y2);
             for (int i = y1 + j; abs(i-y2) > 0; i += j){
@@ -160,9 +148,7 @@ bool Game::InBetween_pieces(int x1,int y1,int x2,int y2){
                 }
                 j += l;
             }
-        }            
-        
-        
+        }
     }
     return false;
 }
@@ -188,76 +174,47 @@ vector <vector<int>> Game::target_Squares(int X1, int Y1){
             }
         }
         else{
-            if (Y1 < 7){
-                if (pieces[pid]->getcolor() == 0){
+            cout<<"check1"<<endl;
+            if (pieces[pid]->getcolor() == 0){
+                cout<<"check2"<<endl;
+                if (Y1<7){
+                    cout<<"check3"<<endl;
                     int rid = Board[X1-1][Y1+1];
-                    if (rid < 32){
-                        if (pieces[rid]->getcolor() != pieces[pid]->getcolor()){
-                            
-                            square.push_back(X1-1);
-                            square.push_back(Y1+1);
-                            squaresList.push_back(square);
-                            square.clear();
-                        }
-                    }
-                    else{
+                    if (!(rid < 32 && pieces[rid]->getcolor() == pieces[pid]->getcolor())){
+                        cout<<"check4"<<endl;
                         square.push_back(X1-1);
                         square.push_back(Y1+1);
                         squaresList.push_back(square);
-                        square.clear();
+                        square.clear();                  
                     }
                 }
-                else{
-                    int rid = Board[X1+1][Y1+1];
-                    if (rid < 32){
-                        if (pieces[rid]->getcolor() != pieces[pid]->getcolor()){
-                            square.push_back(X1+1);
-                            square.push_back(Y1+1);
-                            squaresList.push_back(square);
-                            square.clear();
-                        }
-                    }
-                    else{
-                        square.push_back(X1+1);
-                        square.push_back(Y1+1);
+                if (Y1>0){
+                    int lid = Board[X1-1][Y1-1];
+                    if (!(lid < 32 && pieces[lid]->getcolor() == pieces[pid]->getcolor())){
+                        square.push_back(X1-1);
+                        square.push_back(Y1-1);
                         squaresList.push_back(square);
-                        square.clear();
+                        square.clear();                  
                     }
                 }
             }
-            if (Y1 > 0){
-                if (pieces[pid]->getcolor() == 0){
-                    int rid = Board[X1-1][Y1-1];
-                    if (rid < 32){
-                        if (pieces[rid]->getcolor() != pieces[pid]->getcolor()){
-                            square.push_back(X1-1);
-                            square.push_back(Y1-1);
-                            squaresList.push_back(square);
-                            square.clear();
-                        }
-                    }
-                    else{
-                        square.push_back(X1-1);
-                        square.push_back(Y1-1);
+            else{
+                if (Y1<7){
+                    int rid = Board[X1+1][Y1+1];
+                    if (!(rid < 32 && pieces[rid]->getcolor() == pieces[pid]->getcolor())){
+                        square.push_back(X1+1);
+                        square.push_back(Y1+1);
                         squaresList.push_back(square);
-                        square.clear();
+                        square.clear();                  
                     }
                 }
-                else{
-                    int rid = Board[X1+1][Y1-1];
-                    if (rid < 32){
-                        if (pieces[rid]->getcolor() != pieces[pid]->getcolor()){
-                            square.push_back(X1+1);
-                            square.push_back(Y1-1);
-                            squaresList.push_back(square);
-                            square.clear();
-                        }
-                    }
-                    else{
+                if (Y1>0){
+                    int lid = Board[X1+1][Y1-1];
+                    if (!(lid < 32 && pieces[lid]->getcolor() == pieces[pid]->getcolor())){
                         square.push_back(X1+1);
                         square.push_back(Y1-1);
                         squaresList.push_back(square);
-                        square.clear();
+                        square.clear();                  
                     }
                 }
             }
@@ -300,5 +257,4 @@ bool Game::king_in_check(int X,int Y){
             return true;
         }
     return false;
- 
 }
