@@ -5,7 +5,6 @@
 Piece::Piece(){
     int x,y,color,id;
 }
-
 void Piece::setx(int X){
     x = X;
 }
