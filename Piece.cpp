@@ -3,8 +3,9 @@
 
 
 Piece::Piece(){
-    int x,y,color,id;
+    int x,y,color,id ,name;
 }
+
 void Piece::setx(int X){
     x = X;
 }
@@ -28,6 +29,9 @@ int Piece::getid(){
 }
 int Piece::getcolor(){
     return color;
+}
+char Piece::getname(){
+    return name ;
 }
 bool Piece::legal_move(int X,int Y){
     return false;

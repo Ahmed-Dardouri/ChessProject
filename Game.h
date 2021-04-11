@@ -26,6 +26,7 @@ class Game{
         vector <vector<int>> target_Squares(int, int);
         vector <vector<int>> target_Pieces(int, int);
         vector <vector<int>> global_Targets_List();
+        vector <vector<int>> global_Targets_Squares();
         void putPiece(int ID);
         void initiateBoard();
         void abstractMove(int,int,int,int);
