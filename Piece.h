@@ -11,6 +11,8 @@ class Piece{
         int id;
         int x;
         int y;
+        char name;
+
     public:
         
         Piece();
@@ -22,7 +24,14 @@ class Piece{
         bool getpin();
         int getid();
         int getcolor();
+        char getname();
+
+        virtual int geta(){
+            return 100000;
+        }
         virtual bool legal_move(int ,int );
+        
+
 };
 
 #endif
