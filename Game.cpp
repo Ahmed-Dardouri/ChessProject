@@ -279,7 +279,7 @@ bool Game::king_in_check(int X,int Y){
  
 }
 
-void Game::Promotion (int i, int j){
+void Game::Promotion(int i, int j){
     int pid = Board[i][j];
     int X = pieces[pid]->getx();
     int Y = pieces[pid]->gety();
@@ -316,92 +316,361 @@ void Game::Promotion (int i, int j){
     }
 }
 
-void Game::castle (int i,int j){ 
-    if (turn == 0){
-        vector <vector<int>> bts;
-        bts = black_Targets_Squares();
-        int x1 = pieces[4]->getx();
-        int y1 = pieces[4]->gety();
-        if (Board[i][j]==0){
-            if ((InBetween_pieces(x1,y1,x1,y1-3)==false) && (Board[7][1] = 50) && (pieces[4]->gethm()==false)&& (pieces[0]->gethm()==false)){
-                bool trouve = false;
-                for (int k=0; k<bts.size();k++){
-                    if (bts[k][0]==7&& (bts[k][1]==2||bts[k][1]==3||bts[k][1]==4)){
-                        trouve =true;
-                        break;
+void Game::castle(int i,int j){
+    int rid = Board[i][j];
+    if (typeid(*pieces[rid]) == typeid(*pieces[0]) && pieces[rid]->getcolor() == turn){
+        if (turn == 0){
+            vector <vector<int>> bts;
+            bts = black_Targets_Squares();
+            int x1 = pieces[4]->getx();
+            int y1 = pieces[4]->gety();
+            if (Board[i][j]==0){
+                if ((InBetween_pieces(x1,y1,x1,y1-3)==false) && (Board[7][1] = 50) && (pieces[4]->gethm()==false)&& (pieces[0]->gethm()==false)){
+                    bool trouve = false;
+                    for (int k=0; k<bts.size();k++){
+                        if (bts[k][0]==7&& (bts[k][1]==2||bts[k][1]==3||bts[k][1]==4)){
+                            trouve =true;
+                            break;
+                        }
+                    }
+                    if(trouve==false) {
+                        abstractMove(7,4,7,2);
+                        abstractMove(7,0,7,3);
+                        pieces[4]->sethm();
+                        pieces[0]->sethm();
                     }
                 }
-                if(trouve==false) {
-                    abstractMove(7,4,7,2);
-                    abstractMove(7,0,7,3);
-                    pieces[4]->sethm();
-                    pieces[0]->sethm();
+            }
+            else if (Board[i][j]==7){
+                if ((InBetween_pieces(x1,y1,x1,y1+2)==false) && (Board[7][6] = 50) && (pieces[4]->gethm()==false)&& (pieces[7]->gethm()==false)){
+                    bool trouve = false;
+                    for (int k=0; k<bts.size();k++){
+                        if (bts[k][0]==7&& (bts[k][1]==5||bts[k][1]==6||bts[k][1]==4)){
+                            trouve =true;
+                            break;
+                        }
+                    }
+                    if(trouve==false){
+                        abstractMove(7,4,7,6);
+                        abstractMove(7,7,7,5);
+                        pieces[4]->sethm();
+                        pieces[7]->sethm();
+                    }
+                    else{
+                        cout<<"Illegal move";
+                    }
                 }
             }
         }
-        else if (Board[i][j]==7){
-            if ((InBetween_pieces(x1,y1,x1,y1+2)==false) && (Board[7][6] = 50) && (pieces[4]->gethm()==false)&& (pieces[7]->gethm()==false)){
-                bool trouve = false;
-                for (int k=0; k<bts.size();k++){
-                    if (bts[k][0]==7&& (bts[k][1]==5||bts[k][1]==6||bts[k][1]==4)){
-                        trouve =true;
-                        break;
+        else if (turn==1){
+            vector <vector<int>> wts;
+            wts = white_Targets_Squares();
+            int x1 = pieces[20]->getx();
+            int y1 = pieces[20]->gety();
+            if (Board[i][j]==16){
+                if ((InBetween_pieces(x1,y1,x1,y1-3)==false) && (Board[0][1] = 50) && (pieces[20]->gethm()==false)&& (pieces[16]->gethm()==false)){
+                    bool trouve = false;
+                    for (int k=0; k<wts.size();k++){
+                        if (wts[k][0]==0 && (wts[k][1]==2||wts[k][1]==3||wts[k][1]==4)){
+                            trouve =true;
+                            break;
+                        }
+                    }
+                    if(trouve==false) {
+                        abstractMove(0,4,0,2);
+                        abstractMove(0,0,0,3);
+                        pieces[20]->sethm();
+                        pieces[16]->sethm();
+                    }
+                    else{
+                        cout<<"Illegal move";
                     }
                 }
-                if(trouve==false){
-                    abstractMove(7,4,7,6);
-                    abstractMove(7,7,7,5);
-                    pieces[4]->sethm();
-                    pieces[7]->sethm();
-                }
-                else{
-                    cout<<"Illegal move";
+            }
+            else if (Board[i][j]==23){
+                if ((InBetween_pieces(x1,y1,x1,y1+2)==false) && (Board[0][6] = 50) && (pieces[20]->gethm()==false)&& (pieces[23]->gethm()==false)){
+                    bool trouve = false;
+                    for (int k=0; k<wts.size();k++){
+                        if (wts[k][0]==0&& (wts[k][1]==5||wts[k][1]==6||wts[k][1]==4)){
+                            trouve =true;
+                            break;
+                        }
+                    }
+                    if(trouve==false) {
+                        abstractMove(0,4,0,6);
+                        abstractMove(0,7,0,5);
+                        pieces[20]->sethm();
+                        pieces[23]->sethm();
+                    }
+                    else{
+                        cout<<"Illegal move";
+                    }
                 }
             }
+        }
+    } 
+}
+
+
+
+
+
+
+
+bool Game ::verify_move(string move){
+    vector<char> squares_c = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+    vector<char> squares_n = {'1', '2', '3', '4', '5', '6', '7', '8'};
+    vector<char>::iterator it;
+    if (move.size() == 2)
+    {
+        it = find(squares_c.begin(), squares_c.end(), move[0]);
+        if (it != squares_c.end())
+        {
+            it = find(squares_n.begin(), squares_n.end(), move[1]);
+            if (it != squares_n.end())
+            {
+                return true;
+            }
+
+            else
+            {
+                cout << "verify line entrence" << endl
+                     << move[1] << "th line doesn't exist" << endl;
+                return false;
+            }
+        }
+        else
+        {
+            cout << "verify column entrence " << endl
+                 << move[0] << ": column doesn't exsist" << endl;
+            return false;
         }
     }
-    else if (turn==1){
-        vector <vector<int>> wts;
-        wts = white_Targets_Squares();
-        int x1 = pieces[20]->getx();
-        int y1 = pieces[20]->gety();
-        if (Board[i][j]==16){
-            if ((InBetween_pieces(x1,y1,x1,y1-3)==false) && (Board[0][1] = 50) && (pieces[20]->gethm()==false)&& (pieces[16]->gethm()==false)){
-                bool trouve = false;
-                for (int k=0; k<wts.size();k++){
-                    if (wts[k][0]==0 && (wts[k][1]==2||wts[k][1]==3||wts[k][1]==4)){
-                        trouve =true;
-                        break;
-                    }
+
+    else
+    {
+        cout << "enter the correct position" << endl;
+        return false;
+    }
+}
+
+vector<int> Game::translate_move(string move){
+    vector<char> squares_c = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+    vector<char> squares_n = {'1', '2', '3', '4', '5', '6', '7', '8'};
+
+    int j;
+    for (j = 0; j != 8; j++)
+        if (move[0] == squares_c[j])
+            break;
+    int i;
+    for (i = 0; i != 8; i++)
+        if (move[1] == squares_n[i])
+            break;
+    i = 7 - i;
+    vector<int> square = {i, j};
+    return square;
+}
+void Game::pawn_mouvement(int x1, int y1, int i, int j){
+    bool I_moved = false;
+    id1 = Board[x1][y1];
+    if (turn == 1){
+        int bkx = pieces[20]->getx();
+        int bky = pieces[20]->gety();
+        if (y1 == j){
+            if (!InBetween_pieces(x1,y1,i,j)){
+                if (x1 + 2 == i && x1 == 1){
+                    abstractMove(x1,y1,i,j);
+                    I_moved = true;
+                    pieces[id1]->settsm(true);
                 }
-                if(trouve==false) {
-                    abstractMove(0,4,0,2);
-                    abstractMove(0,0,0,3);
-                    pieces[20]->sethm();
-                    pieces[16]->sethm();
-                }
-                else{
-                    cout<<"Illegal move";
+                else if (x1 + 1 == i){
+                    abstractMove(x1,y1,i,j);
+                    I_moved = true;
                 }
             }
         }
-        else if (Board[i][j]==23){
-            if ((InBetween_pieces(x1,y1,x1,y1+2)==false) && (Board[0][6] = 50) && (pieces[20]->gethm()==false)&& (pieces[23]->gethm()==false)){
-                bool trouve = false;
-                for (int k=0; k<wts.size();k++){
-                    if (wts[k][0]==0&& (wts[k][1]==5||wts[k][1]==6||wts[k][1]==4)){
-                        trouve =true;
-                        break;
+        else if (abs(y1 - j) == 1 && i - x1 == 1){
+            vector<vector<int>> s = target_Squares(x1,y1);
+            vector<int> square = {i,j};
+            bool ok = false;
+            for (int k = 0;k < s.size():k++){
+                if (s[k] = square){
+                    ok = true;
+                }
+            }
+            if (ok){
+                if (Board[i][j] == 50){
+                    if (x1 = 4){
+                        int id2 = Board[i-1][j];
+                        if (id2 < 32){
+                            if (typeid(*pieces[id2]) == typeid(*pieces[8]){
+                                if (pieces[id2]->gettsm()){
+                                    abstractMove(x1,y1,i,j);
+                                    Board[i-1][j] = 50;
+                                    I_moved = true;
+                                }
+                            }
+                        }
                     }
                 }
-                if(trouve==false) {
-                    abstractMove(0,4,0,6);
-                    abstractMove(0,7,0,5);
-                    pieces[20]->sethm();
-                    pieces[23]->sethm();
+                else if (Board[i][j] < 16)
+                {
+                    abstractMove(x1,y1,i,j);
+                    I_moved = true;
                 }
-                else{
-                    cout<<"Illegal move";
+            }
+        }
+        if (king_in_check(bkx,bky)){
+            abstractMove(i,j,x1,y1);
+            I_moved = false;
+            if (pieces[id1]->gettsm()){
+                pieces[id1]->settsm(false);
+            }
+        }
+        
+        if (I_moved && i == 7){
+            Promotion (i,j);
+        }
+    }
+    else //white
+    {
+        int wkx = pieces[4]->getx();
+        int wky = pieces[4]->gety();
+        if (y1 == j){
+            if (!InBetween_pieces(x1,y1,i,j)){
+                if (x1 - 2 == i && x1 == 6){
+                    abstractMove(x1,y1,i,j);
+                    I_moved = true;
+                    pieces[id1]->settsm(true);
+                }
+                else if (x1 - 1 == i){
+                    abstractMove(x1,y1,i,j);
+                    I_moved = true;
+                }
+            }
+        }
+        else if (abs(y1 - j) == 1 && x1 - i == 1){
+            vector<vector<int>> s = target_Squares(x1,y1);
+            vector<int> square = {i,j};
+            bool ok = false;
+            for (int k = 0;k < s.size():k++){
+                if (s[k] = square){
+                    ok = true;
+                }
+            }
+            if (ok){
+                if (Board[i][j] == 50){
+                    if (x1 = 3){
+                        int id2 = Board[i+1][j];
+                        if (id2 < 32){
+                            if (typeid(*pieces[id2]) == typeid(*pieces[8]){
+                                if (pieces[id2]->gettsm()){
+                                    abstractMove(x1,y1,i,j);
+                                    Board[i+1][j] = 50;
+                                    I_moved = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (Board[i][j] > 15)
+                {
+                    abstractMove(x1,y1,i,j);
+                    I_moved = true;
+                }
+            }
+        }
+        if (king_in_check(wkx,wky)){
+            abstractMove(i,j,x1,y1);
+            I_moved = false;
+            if (pieces[id1]->gettsm()){
+                pieces[id1]->settsm(false);
+            }
+        }
+        
+        if (I_moved && i == 0){
+            Promotion (i,j);
+        }
+    }
+}
+
+void Game::move(){
+    string move_i, move_f;
+    vector<int> square_i;
+    vector<int> square_f;
+    int wkx = pieces[4]->getx();
+    int wky = pieces[4]->gety();
+    int bkx = pieces[20]->getx();
+    int bky = pieces[20]->gety();
+    if (turn == 0)
+    {
+        cout << "White's turn to play" << endl;
+    }
+    else
+        cout << "black's Turn to play" << endl;
+    do
+    {
+        cout << "enter piece's initial square" << endl;
+        cin >> move_i;
+    } while (verify_move(move_i) == false);
+    do
+    {
+        cout << "enter piece's direction square" << endl;
+        cin >> move_f;
+    } while (verify_move(move_f) == false);
+    //read the piece initial and togo squares
+    square_i = translate_move(move_i);
+    square_f = translate_move(move_f);
+    int x1 = square_i[0];
+    int y1 = square_i[1];
+    int i = square_f[0];
+    int j = square_f[1];
+    int id1 = Board[x1][y1];
+    //(x1,y1) piece's initial square ; (i,j) piece's final square according to the Board notations
+    if (id1 == 50){
+        cout << "The initial square is empty" << endl;
+    }
+    else{
+        if (pieces[id1]->getcolor() == turn){
+            if (typeid(*pieces[id1]) == typeid(*pieces[8])){
+                //pawn movement function
+                pawn_mouvement(x1, y1, i, j, id1);
+            }
+            else if (typeid(*pieces[id1]) == typeid(*pieces[4]) && (abs(y1 - j) = 2 || abs(y1 - j) = 3)){
+                castle(i,j);
+            }
+            else{
+                vector<vector<int>> c = target_Squares(x1, y1);
+                vector<vector<int>>::iterator it1;
+                it1 = find(c.begin(), c.end(), square_f);
+                if (it1 != c.end()){
+                    abstractMove(x1, y1, i, j);
+                    if (turn == 1)
+                    {
+                        if (king_in_check(bkx, bky))
+                        {
+                            cout << "Black king is in check";
+                            abstractMove(i, j, x1, y1);
+                        }
+                        else
+                        {
+                            showBoard();
+                            cout << "Black plays the move " << move_i << " to " << move_f << endl;
+                        }
+                    }
+                    else
+                    {
+                        if (king_in_check(wkx, wky))
+                        {
+                            cout << "White king is in check" << endl;
+                            abstractMove(i, j, x1, y1);
+                        }
+                        else
+                        {
+                            showBoard();
+                            cout << "white plays the move " << move_i << " to " << move_f << endl;
+                        }
+                    }
                 }
             }
         }
