@@ -875,3 +875,4 @@ void Game ::move()
         }
     }
 }
+//hi
