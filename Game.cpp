@@ -347,6 +347,7 @@ bool Game::king_in_check(int X, int Y)
     return false;
 }
 
+
 void Game::Promotion(int i, int j)
 {
     int pid = Board[i][j];
@@ -390,6 +391,7 @@ void Game::Promotion(int i, int j)
         }
     } while (tolower(choice) != 'b' && tolower(choice) != 'n' && tolower(choice) != 'r' && tolower(choice) != 'q');
 }
+
 
 void Game::castle(int i, int j)
 {
@@ -449,6 +451,49 @@ void Game::castle(int i, int j)
                 }
             }
         }
+    } 
+}
+
+
+
+
+
+
+
+bool Game ::verify_move(string move){
+    vector<char> squares_c = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+    vector<char> squares_n = {'1', '2', '3', '4', '5', '6', '7', '8'};
+    vector<char>::iterator it;
+    if (move.size() == 2)
+    {
+        it = find(squares_c.begin(), squares_c.end(), move[0]);
+        if (it != squares_c.end())
+        {
+            it = find(squares_n.begin(), squares_n.end(), move[1]);
+            if (it != squares_n.end())
+            {
+                return true;
+            }
+
+            else
+            {
+                cout << "verify line entrence" << endl
+                     << move[1] << "th line doesn't exist" << endl;
+                return false;
+            }
+        }
+        else
+        {
+            cout << "verify column entrence " << endl
+                 << move[0] << ": column doesn't exsist" << endl;
+            return false;
+        }
+    }
+
+    else
+    {
+        cout << "enter the correct position" << endl;
+        return false;
     }
     else if (turn == 1)
     {
@@ -875,4 +920,3 @@ void Game ::move()
         }
     }
 }
-//hi
