@@ -20,6 +20,3 @@ bool King::legal_move(int i,int j){
     }
     return ok;   
 }
-bool King::gethm(){
-    return has_moved;
-}

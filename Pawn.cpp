@@ -20,6 +20,3 @@ bool Pawn::legal_move(int i,int j){
     }
     return ok;
 }
-bool Pawn::gethm(){
-    return has_moved;
-}

@@ -12,7 +12,7 @@ class Piece{
         int x;
         int y;
         char name;
-
+        bool hm = false;
     public:
         
         Piece();
@@ -25,10 +25,9 @@ class Piece{
         int getid();
         int getcolor();
         char getname();
-
-        virtual int geta(){
-            return 100000;
-        }
+        bool gethm();
+        void sethm();
+        
         virtual bool legal_move(int ,int );
         
 

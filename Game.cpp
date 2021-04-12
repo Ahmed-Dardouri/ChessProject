@@ -71,13 +71,12 @@ Game::Game(){
 
     initiateBoard();
     showBoard();
-
-    
 }
 
 void Game::putPiece(int ID){
     Board[pieces[ID]->getx()][pieces[ID]->gety()] = pieces[ID]->getid();
 }
+
 void Game::initiateBoard(){
     for (int i = 2; i < 6;i++){
         for (int j = 0; j < 8;j++){
@@ -103,7 +102,7 @@ void Game::showBoard(){
     cout<<endl;
     for (int i = 0; i < 8;i++){
         for (int j = 0; j < 8;j++){
-            if (Board [i][j] != 50) {
+            if (Board [i][j] != 50){
               cout<<setw(4);
               cout<< pieces[Board[i][j]]->getname();
             }
@@ -116,6 +115,7 @@ void Game::showBoard(){
     }
     cout<<endl;
 }
+
 bool Game::InBetween_pieces(int x1,int y1,int x2,int y2){
     int pid = Board[x1][y1];
     if (pid < 32){
@@ -160,6 +160,7 @@ bool Game::InBetween_pieces(int x1,int y1,int x2,int y2){
     }
     return false;
 }
+
 vector <vector<int>> Game::target_Squares(int X1, int Y1){
     vector <vector<int>> squaresList;
     vector<int> square;
@@ -182,14 +183,10 @@ vector <vector<int>> Game::target_Squares(int X1, int Y1){
             }
         }
         else{
-            cout<<"check1"<<endl;
             if (pieces[pid]->getcolor() == 0){
-                cout<<"check2"<<endl;
                 if (Y1<7){
-                    cout<<"check3"<<endl;
                     int rid = Board[X1-1][Y1+1];
                     if (!(rid < 32 && pieces[rid]->getcolor() == pieces[pid]->getcolor())){
-                        cout<<"check4"<<endl;
                         square.push_back(X1-1);
                         square.push_back(Y1+1);
                         squaresList.push_back(square);
@@ -230,278 +227,181 @@ vector <vector<int>> Game::target_Squares(int X1, int Y1){
     }
     return squaresList;
 }
-vector <vector<int>> Game::target_Pieces(int X, int Y){
+
+vector <vector<int>> Game::white_Targets_Squares(){
+    vector <vector<int>> wts;
     vector <vector<int>> s;
-    vector <vector<int>> p;
-    s = target_Squares(X,Y);
-    for(int i=0; i < s.size(); i++){
-        if (Board[s[i][0]][s[i][1]] < 32){
-            p.push_back(s[i]);
-        }
-    }
-    return p;
-}
-vector <vector<int>> Game::global_Targets_List(){
-    vector <vector <int>> gtl;
-    vector <vector <int>> s;
-    for (int i = 0;i < 8;i++){
-        for(int j = 0; j < 8; j++){
-            if (Board[i][j]<32){
-                s = target_Pieces(i,j);
-                gtl.insert(gtl.end(), s.begin(), s.end());
+    for (int i = 0; i < 8; i++){
+        for (int j = 0; j < 8; j++){
+            if (Board[i][j]<16){
+                s = target_Squares(i,j);
+                for(int k = 0;k<s.size();k++){
+                wts.push_back(s[k]);
+            }
+            s.clear();
             }
         }
     }
-    return gtl;
+    return wts;
 }
+vector <vector<int>> Game::black_Targets_Squares(){
+    vector <vector<int>> bts;
+    vector <vector<int>> s;
+    for (int i = 0; i < 8; i++){
+        for (int j = 0; j < 8; j++){
+            if (Board[i][j]>15 && Board[i][j] != 50){
+                s = target_Squares(i,j);
+                for(int k = 0;k<s.size();k++){
+                bts.push_back(s[k]);
+            }
+            s.clear();
+            }
+        }
+    }
+    return bts;
+}
+
 bool Game::king_in_check(int X,int Y){
-    vector <vector <int>> gtl;
-    gtl = global_Targets_List();
-    
+    vector <vector<int>> ts;
+    if (turn = 0){
+        ts = white_Targets_Squares();
+    }
+    else{
+        ts = black_Targets_Squares();
+    }
     vector<int> kingPos = {X,Y};
 
-    for (int i = 0; i < gtl.size(); i++)
-        if (gtl[i] == kingPos) {
+    for (int i = 0; i < ts.size(); i++)
+        if (ts[i] == kingPos) {
             return true;
         }
     return false;
  
 }
-vector <vector<int>> Game::global_Targets_Squares(){
-    vector <vector<int>> gts;
-    vector <vector<int>> s;
-    for (int i=0; i<8 ,i++){
-        for (int j=0 , j<8 , j++ ){
-            if ( Board[i][j]<32) {
-                s =target_Squares(i,j);
-                gts.insert(gts.end(),s.begin(),s.end());
-            }
-        }
+
+void Game::Promotion (int i, int j){
+    int pid = Board[i][j];
+    int X = pieces[pid]->getx();
+    int Y = pieces[pid]->gety();
+    int C = pieces[pid]->getcolor();
+    cout<< " you can promote your pawn to Bishop, Knight, Rook or Queen"<<endl;
+    char choice;
+    cin>>choice;
+    if (turn == 0) {
+        choice = tolower(choice);
     }
-    return gts;
-}
-void function Promotion (){
-    if ( turn==0 &&  ...... ){
-        if (i==0) {
-            cout<< " you can promote your pawn  to Bishop, Knight,Rook or Queen"
-            cin>> choice;
-            switch (choice)
-            {
-            case B:
-                 Bishop *wb2 = new Bishop(i,j,0,id1,b);
-                 pieces.push_back(wb2);
-                 delete Pawn(i,j,0,id1,p);
-                 putPiece(id1);
-                 break;
-            case K:
-                 Knight *wn2 = new Knight(i,j,0,id1,n);
-                 pieces.push_back(wn2);
-                 delete Pawn(i,j,0,id1,p);
-                 putPiece(id1);
-                 break;
-            case R:
-                 Rook *wr2 = new Rook(i,j,0,id1,r);
-                 pieces.push_back(wr2);
-                 delete Pawn(i,j,0,id1,p);
-                 putPiece(id1);
-                 break;
-            case Q:
-                 Queen *wq2 = new Queen(i,j,0,id1,q);
-                 pieces.push_back(wq2);
-                 delete Pawn(i,j,0,id1,p);
-                 putPiece(id1) ;
-                 break;
-            default:
-                 cout << "you picked the wrong piece!"
-                break;
-            }
-        }
+    else{
+        choice = toupper(choice);
     }
-    else if ( turn == 1 && ......){
-        if (i==7) {
-            cout<< " you can promote your pawn  to Bishop, Knight,Rook or Queen"
-            cin>> choice;
-            switch (choice)
-            {
-            case B:
-                 Bishop *bb2 = new Bishop(i,j,1,id1,B);
-                 pieces.push_back(nb2);
-                 delete Pawn(i,j,1,id1,P);
-                 putPiece(id1);
-                 break;
-            case N:
-                 Knight *bn2 = new Knight(i,j,1,id1,N);
-                 pieces.push_back(bn2);
-                 delete Pawn(i,j,1,id1,P);
-                 putPiece(id1);
-                 break;
-            case R:
-                 Rook *br2 = new Rook(i,j,1,id1,R);
-                 pieces.push_back(br2);
-                 delete Pawn(i,j,1,id1,P);
-                putPiece(id1);
-                 break;
-            case Q:
-                 Queen *bq2 = new Queen(i,j,1,id1,Q);
-                 pieces.push_back(bq2);
-                 delete Pawn(i,j,1,id1,P);
-                 putPiece(id1);
-                 break;
-            default:
-                 cout << "you picked the wrong piece!"
-                break;
-            }
-        }
+    switch (tolower(choice)){
+    case 'b':
+        pieces[pid] = new Bishop(X,Y,C,pid,choice);
+        putPiece(pid);
+        break;
+    case 'n':
+        pieces[pid] = new Knight(X,Y,C,pid,choice);
+        putPiece(pid);
+        break;
+    case 'r':
+        pieces[pid] = new Rook(X,Y,C,pid,choice);
+        putPiece(pid);
+        break;
+    case 'q':
+        pieces[pid] = new Queen(X,Y,C,pid,choice);
+        putPiece(pid);
+        break;
+    default:
+            cout << "you picked the wrong piece!";
+        break;
     }
 }
-void function castle (){ 
-    if (turn ==0){
-        if ((id1==4) && (Board[i][j]]==0 || Board[i][j]]==7)
-        {
-            if (id1==4 && Board[i][j]]==0)
-            {
-                if (InBetween_pieces(x1,y1,i,j)==false) && (pieces[4]->gethm()==false)&& (pieces[0]->gethm()==false)
-                {
-                    gts=global_Targets_Squares();
-                    bool trouve=false;
-                    for (int i=0, i<gts.size(),i++)
-                    {
-                        for (int j=0,j<gts[i].size(),j++)
-                        {
-                            if ((gts[i][j][0]==7)&& (gts[i][j][1]==2)||(gts[i][j][0]==7)&& (gts[i][j][1]==3)||(gts[i][j][0]==7)&& (gts[i][j][1]==4)) 
-                            {
-                                trouve =true;
-                                break;
-                            }
-                        }
-                    }
-                    if(trouve==false) {
-                        abstractMove(7,4,7,2);
-                        abstractMove(7,0,7,3);
-                    }
-                    else{
-                        cout<<"you picked the wrong piece";
+
+void Game::castle (int i,int j){ 
+    if (turn == 0){
+        vector <vector<int>> bts;
+        bts = black_Targets_Squares();
+        int x1 = pieces[4]->getx();
+        int y1 = pieces[4]->gety();
+        if (Board[i][j]==0){
+            if ((InBetween_pieces(x1,y1,x1,y1-3)==false) && (Board[7][1] = 50) && (pieces[4]->gethm()==false)&& (pieces[0]->gethm()==false)){
+                bool trouve = false;
+                for (int k=0; k<bts.size();k++){
+                    if (bts[k][0]==7&& (bts[k][1]==2||bts[k][1]==3||bts[k][1]==4)){
+                        trouve =true;
+                        break;
                     }
                 }
+                if(trouve==false) {
+                    abstractMove(7,4,7,2);
+                    abstractMove(7,0,7,3);
+                    pieces[4]->sethm();
+                    pieces[0]->sethm();
+                }
             }
-            else if (id1==4 && Board[i][j]]==7)
-            {
-                if (InBetween_pieces(x1,y1,i,j)==false) && (pieces[4]->gethm()==false)&& (pieces[7]->gethm()==false)
-                {
-                    gts=global_Targets_Squares();
-                    bool trouve=false;
-                    for (int i=0, i<gts.size(),i++)
-                    {
-                        for (int j=0,j<gts[i]..size(),j++)
-                        {
-                            if ((gts[i][j][0]==7)&& (gts[i][j][1]==5) 
-                            {
-                                trouve =true;
-                                break;
-                              
-                            }
-                            else if ((gts[i][j][0]==7)&& (gts[i][j][1]==6) {
-                                trouve =true;
-                                break;
-                            }
-                            else if ((gts[i][j][0]==7)&& (gts[i][j][1]==4) {
-                                trouve =true;
-                                break;
-                            }
-                         
-                        
-                        }
-
+        }
+        else if (Board[i][j]==7){
+            if ((InBetween_pieces(x1,y1,x1,y1+2)==false) && (Board[7][6] = 50) && (pieces[4]->gethm()==false)&& (pieces[7]->gethm()==false)){
+                bool trouve = false;
+                for (int k=0; k<bts.size();k++){
+                    if (bts[k][0]==7&& (bts[k][1]==5||bts[k][1]==6||bts[k][1]==4)){
+                        trouve =true;
+                        break;
                     }
-                    if(trouve==false;) {
-                        abstractMove(7,4,7,6);
-                        abstractMove(7,7,7,5);
-                    }
-                    else{
-                        cout<<"you picked the wrong piece"
-                    }
+                }
+                if(trouve==false){
+                    abstractMove(7,4,7,6);
+                    abstractMove(7,7,7,5);
+                    pieces[4]->sethm();
+                    pieces[7]->sethm();
+                }
+                else{
+                    cout<<"Illegal move";
                 }
             }
         }
     }
-    else if (turn==1)
-    {
-        if ((id1==20) && (Board[i][j]]==16 || Board[i][j]]==23)
-        {
-            if (id1==20 && Board[i][j]]==16)
-            {
-                if (InBetween_pieces(x1,y1,i,j)==false) && (pieces[20]->gethm()==false)&& (pieces[16]->gethm()==false)
-                {
-                    gts=global_Targets_Squares();
-                    bool trouve=false;
-                    for (int i=0, i<gts.size(),i++)
-                    {
-                        for (int j=0,j<gts[i]..size(),j++)
-                        {
-                            if ((gts[i][j][0]==0)&& (gts[i][j][1]==2) 
-                            {
-                                trouve =true;
-                                break;
-                              
-                            }
-                            else if ((gts[i][j][0]==0)&& (gts[i][j][1]==3) {
-                                trouve =true;
-                                break;
-                            }
-                            else if ((gts[i][j][0]==0)&& (gts[i][j][1]==4) {
-                                trouve =true;
-                                break;
-                            }
-                         
-                        
-                        }
-
-                    }
-                    if(trouve==false;) {
-                        abstractMove(0,4,0,2);
-                        abstractMove(0,0,0,3);
-                    }
-                    else{
-                        cout<<"you picked the wrong piece"
+    else if (turn==1){
+        vector <vector<int>> wts;
+        wts = white_Targets_Squares();
+        int x1 = pieces[20]->getx();
+        int y1 = pieces[20]->gety();
+        if (Board[i][j]==16){
+            if ((InBetween_pieces(x1,y1,x1,y1-3)==false) && (Board[0][1] = 50) && (pieces[20]->gethm()==false)&& (pieces[16]->gethm()==false)){
+                bool trouve = false;
+                for (int k=0; k<wts.size();k++){
+                    if (wts[k][0]==0 && (wts[k][1]==2||wts[k][1]==3||wts[k][1]==4)){
+                        trouve =true;
+                        break;
                     }
                 }
+                if(trouve==false) {
+                    abstractMove(0,4,0,2);
+                    abstractMove(0,0,0,3);
+                    pieces[20]->sethm();
+                    pieces[16]->sethm();
+                }
+                else{
+                    cout<<"Illegal move";
+                }
             }
-            else if (id1==20 && Board[i][j]]==23)
-            {
-                if (InBetween_pieces(x1,y1,i,j)==false) && (pieces[20]->gethm()==false)&& (pieces[23]->gethm()==false)
-                {
-                    gts=global_Targets_Squares();
-                    bool trouve=false;
-                    for (int i=0, i<gts.size(),i++)
-                    {
-                        for (int j=0,j<gts[i]..size(),j++)
-                        {
-                            if ((gts[i][j][0]==0)&& (gts[i][j][1]==5) 
-                            {
-                                trouve =true;
-                                break;
-                              
-                            }
-                            else if ((gts[i][j][0]==0)&& (gts[i][j][1]==6) {
-                                trouve =true;
-                                break;
-                            }
-                            else if ((gts[i][j][0]==0)&& (gts[i][j][1]==4) {
-                                trouve =true;
-                                break;
-                            }
-                         
-                        
-                        }
-
+        }
+        else if (Board[i][j]==23){
+            if ((InBetween_pieces(x1,y1,x1,y1+2)==false) && (Board[0][6] = 50) && (pieces[20]->gethm()==false)&& (pieces[23]->gethm()==false)){
+                bool trouve = false;
+                for (int k=0; k<wts.size();k++){
+                    if (wts[k][0]==0&& (wts[k][1]==5||wts[k][1]==6||wts[k][1]==4)){
+                        trouve =true;
+                        break;
                     }
-                    if(trouve==false;) {
-                        abstractMove(0,4,0,6);
-                        abstractMove(0,7,0,5);
-                    }
-                    else{
-                        cout<<"you picked the wrong piece"
-                    }
+                }
+                if(trouve==false) {
+                    abstractMove(0,4,0,6);
+                    abstractMove(0,7,0,5);
+                    pieces[20]->sethm();
+                    pieces[23]->sethm();
+                }
+                else{
+                    cout<<"Illegal move";
                 }
             }
         }

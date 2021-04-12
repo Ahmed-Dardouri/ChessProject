@@ -16,9 +16,5 @@ bool Rook::legal_move(int i,int j){
     }
     return ok;
 }
-bool Rook::gethm(){
-    return has_moved;
-}
-int Rook::geta(){
-    return a;
-}
+
+

@@ -31,8 +31,14 @@ int Piece::getcolor(){
     return color;
 }
 char Piece::getname(){
-    return name ;
+    return name;
 }
 bool Piece::legal_move(int X,int Y){
     return false;
+}
+bool Piece::gethm(){
+    return hm;
+}
+void Piece::sethm(){
+    hm = true;
 }
