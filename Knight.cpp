@@ -2,11 +2,12 @@
 #include <cmath>
 #include "Piece.h"
 
-Knight::Knight(int X, int Y, int C, int ID){
+Knight::Knight(int X, int Y, int C, int ID ,char N ){
     x = X;
     y = Y;
     color = C;
     id = ID;
+    name = N; 
 }
 
 bool Knight::legal_move(int i,int j){

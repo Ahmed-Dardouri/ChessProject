@@ -2,11 +2,12 @@
 #include "Pawn.h"
 
 
-Pawn::Pawn(int X, int Y, int C, int ID){
+Pawn::Pawn(int X, int Y, int C, int ID ,char N){
     x = X;
     y = Y;
     color = C;
     id = ID;
+    name = N; 
 }
 
 bool Pawn::legal_move(int i,int j){
@@ -18,7 +19,4 @@ bool Pawn::legal_move(int i,int j){
         ok = false;
     }
     return ok;
-}
-bool Pawn::gethm(){
-    return has_moved;
 }

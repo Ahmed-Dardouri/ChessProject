@@ -3,11 +3,12 @@
 #include "Piece.h"
 
 
-King::King(int X, int Y, int C, int ID){
+King::King(int X, int Y, int C, int ID , char N){
     x = X;
     y = Y;
     color = C;
     id = ID;
+    name = N;
 }
 
 bool King::legal_move(int i,int j){
@@ -18,7 +19,4 @@ bool King::legal_move(int i,int j){
         ok = false;
     }
     return ok;   
-}
-bool King::gethm(){
-    return has_moved;
 }

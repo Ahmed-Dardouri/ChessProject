@@ -11,6 +11,8 @@ class Piece{
         int id;
         int x;
         int y;
+        char name;
+        bool hm = false;
     public:
         
         Piece();
@@ -22,7 +24,13 @@ class Piece{
         bool getpin();
         int getid();
         int getcolor();
+        char getname();
+        bool gethm();
+        void sethm();
+        
         virtual bool legal_move(int ,int );
+        
+
 };
 
 #endif

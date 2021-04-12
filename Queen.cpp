@@ -3,11 +3,12 @@
 #include "Piece.h"
 
 
-Queen::Queen(int X, int Y, int C, int ID){
+Queen::Queen(int X, int Y, int C, int ID,char N){
     x = X;
     y = Y;
     color = C;
     id = ID;
+    name = N;
 }
 bool Queen::legal_move(int i,int j){
     bool ok = true;

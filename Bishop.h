@@ -6,11 +6,8 @@
 class Bishop: public Piece {
 
     public:
-        Bishop(int , int , int , int );
-
-        bool legal_move(int i,int j);
-        
-            
+        Bishop(int , int , int , int, char );
+        bool legal_move(int i,int j);     
 };
 
 #endif
