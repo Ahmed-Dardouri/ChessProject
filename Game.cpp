@@ -73,7 +73,7 @@ Game::Game()
     showBoard();
     while (1)
     {
-        move();
+        play();
     }
 }
 
@@ -347,7 +347,6 @@ bool Game::king_in_check(int X, int Y)
     return false;
 }
 
-
 void Game::Promotion(int i, int j)
 {
     int pid = Board[i][j];
@@ -392,9 +391,9 @@ void Game::Promotion(int i, int j)
     } while (tolower(choice) != 'b' && tolower(choice) != 'n' && tolower(choice) != 'r' && tolower(choice) != 'q');
 }
 
-
-void Game::castle(int i, int j)
+bool Game::castle(int i, int j)
 {
+    bool wrong_move = false;
     if (turn == 0)
     {
         vector<vector<int>> bts;
@@ -420,8 +419,14 @@ void Game::castle(int i, int j)
                     abstractMove(7, 0, 7, 3);
                     pieces[4]->sethm();
                     pieces[0]->sethm();
-                    turn = 1;
                 }
+                else
+                {
+                    wrong_move = true;
+                }
+            }
+            else{
+                wrong_move = true;
             }
         }
         else if (Board[i][j] == 7)
@@ -443,18 +448,89 @@ void Game::castle(int i, int j)
                     abstractMove(7, 7, 7, 5);
                     pieces[4]->sethm();
                     pieces[7]->sethm();
-                    turn = 0;
                 }
                 else
                 {
-                    cout << "Illegal move";
+                    wrong_move = true;
                 }
             }
+            else{
+                wrong_move = true;
+            }
         }
-    } 
+        else{
+            wrong_move = true;
+        }
+    }
+    else
+    {
+        vector<vector<int>> wts;
+        wts = white_Targets_Squares();
+        int x1 = pieces[20]->getx();
+        int y1 = pieces[20]->gety();
+        if (Board[i][j] == 16)
+        {
+            if ((InBetween_pieces(x1, y1, x1, y1 - 3) == false) && (Board[0][1] = 50) && (pieces[20]->gethm() == false) && (pieces[16]->gethm() == false))
+            {
+                bool trouve = false;
+                for (int k = 0; k < wts.size(); k++)
+                {
+                    if (wts[k][0] == 0 && (wts[k][1] == 2 || wts[k][1] == 3 || wts[k][1] == 4))
+                    {
+                        trouve = true;
+                        break;
+                    }
+                }
+                if (trouve == false)
+                {
+                    abstractMove(0, 4, 0, 2);
+                    abstractMove(0, 0, 0, 3);
+                    pieces[20]->sethm();
+                    pieces[16]->sethm();
+                }
+                else{
+                    wrong_move = true;
+                }
+                
+            }
+            else{
+                wrong_move = true;
+            }
+        }
+        else if (Board[i][j] == 23)
+        {
+            if ((InBetween_pieces(x1, y1, x1, y1 + 2) == false) && (Board[0][6] = 50) && (pieces[20]->gethm() == false) && (pieces[23]->gethm() == false))
+            {
+                bool trouve = false;
+                for (int k = 0; k < wts.size(); k++)
+                {
+                    if (wts[k][0] == 0 && (wts[k][1] == 5 || wts[k][1] == 6 || wts[k][1] == 4))
+                    {
+                        trouve = true;
+                        break;
+                    }
+                }
+                if (trouve == false)
+                {
+                    abstractMove(0, 4, 0, 6);
+                    abstractMove(0, 7, 0, 5);
+                    pieces[20]->sethm();
+                    pieces[23]->sethm();
+                }
+                else{
+                    wrong_move = true;
+                }
+            }
+            else{
+                wrong_move = true;
+            }
+        }
+        else{
+            wrong_move = true;
+        }
+    }
+    return wrong_move;
 }
-
-
 
 
 
@@ -514,9 +590,10 @@ vector<int> Game::translate_move(string move)
     return square;
 }
 
-void Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
+bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
 {
     bool I_moved = false;
+    bool wrong_move = false;
     if (turn == 1)
     {
         int bkx = pieces[20]->getx();
@@ -543,17 +620,17 @@ void Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                         cout << "Black king is in check" << endl;
                         abstractMove(i, j, x1, y1);
                         Board[i][j]=p;
+                        wrong_move = true;
                     }
                     else
                     {
-                        //cout << "Black plays the move " << move_i << " to " << move_f << endl;
-                        turn = 0;
+                        pieces[id1]->sethm();
                         I_moved = true;
-                        showBoard();
                     }
                 }
-                else
-                    cout << "Illegal move" << endl;
+                else{
+                    wrong_move = true;
+                }
             }
             else if (abs(j - y1) == 1 && abs(i - x1) == 1)
             {
@@ -573,14 +650,15 @@ void Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                         else
                         {
                             I_moved = true;
+                            pieces[id1]->sethm();
                             Board[i - 1][j] = 50;
                             setpmoved(100);
-                            showBoard();
+                            wrong_move = true;
                         }
                     }
                     else
                     {
-                        cout << "Illegal move" << endl;
+                        wrong_move = true;
                     }
                 }
                 else if (Board[i][j] < 16)
@@ -592,19 +670,24 @@ void Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                         cout << "Black's king is under check" << endl;
                         abstractMove(i, j, x1, y1);
                         Board[i][j] = p;
+                        wrong_move = true;
                     }
                     else
                     {
+                        pieces[id1]->sethm();
                         setpmoved(100);
-                        showBoard();
-                        turn = 0;
                     }
                 }
             }
-            else
-                cout << "wrong move !" << endl;
-            if (I_moved && i == 7)
+            else{
+                wrong_move = true;
+            }
+            if (I_moved && i == 7){
                 Promotion(i, j);
+            }
+        }
+        else{
+            wrong_move = true;
         }
     }
     else //white
@@ -625,24 +708,23 @@ void Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                     {
                         p_moved = 100;
                     }
-
                     abstractMove(x1, y1, i, j);
-
                     if (king_in_check(wkx, wky))
                     {
                         cout << "White's king is under check" << endl;
                         abstractMove(i, j, x1, y1);
+                        wrong_move = true;
                     }
                     else
                     {
+                        pieces[id1]->sethm();
                         I_moved = true;
-                        showBoard();
-                        //cout << "white plays the move " << move_i << " to " << move_f << endl;
-                        turn = 1;
                     }
                 }
-                else
-                    cout << "Illegal move !" << endl;
+                else{
+                    wrong_move = true; 
+                }
+                    
             }
             else if (abs(j - y1) == 1 && x1 - i == 1)
             {
@@ -660,19 +742,19 @@ void Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                             cout << "white's king is under check" << endl;
                             abstractMove(i, j, x1, y1);
                             Board[i][j] = p;
+                            wrong_move = true;
                         }
                         else
                         {
+                            pieces[id1]->sethm();
                             I_moved = true;
                             Board[i + 1][j] = 50;
-                            showBoard();
                             setpmoved(100);
-                            turn = 1;
                         }
                     }
                     else
                     {
-                        cout << "Illegal move" << endl;
+                        wrong_move = true;
                     }
                 }
                 else if (Board[i][j] > 15 && Board[i][j] < 32)
@@ -684,27 +766,32 @@ void Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                         cout << "White's king is under check" << endl;
                         abstractMove(i, j, x1, y1);
                         Board[i][j] = p;
+                        wrong_move = true;
                     }
                     else
                     {
+                        pieces[id1]->sethm();
                         setpmoved(100);
                         I_moved = true;
-                        turn = 1;
-                        showBoard();
                     }
                 }
             }
-            else
-                cout << "wrong move !" << endl;
+            else{
+                wrong_move = true;
+            }
+                
         }
-        else
-            cout << "wrong move !" << endl;
-        if (I_moved && i == 0)
+        else{
+            wrong_move = true;
+        }
+        if (I_moved && i == 0){
             Promotion(i, j);
+        }
     }
+    return wrong_move;
 }
 
-void Game ::move()
+void Game::move()
 {
     string move_i, move_f;
     vector<int> square_i;
@@ -713,109 +800,134 @@ void Game ::move()
     int wky = pieces[4]->gety();
     int bkx = pieces[20]->getx();
     int bky = pieces[20]->gety();
+    bool wrong_move;
     if (turn == 0)
     {
         cout << "White's turn to play" << endl;
     }
     else
+    {
         cout << "black's Turn to play" << endl;
-    do
-    {
-        cout << "enter piece's initial square" << endl;
-        cin >> move_i;
-    } while (verify_move(move_i) == false);
-    do
-    {
-        cout << "enter piece's direction square" << endl;
-        cin >> move_f;
-    } while (verify_move(move_f) == false);
-    //read the piece initial and togo squares
-    square_i = translate_move(move_i);
-    square_f = translate_move(move_f);
-    int x1 = square_i[0];
-    int y1 = square_i[1];
-    int i = square_f[0];
-    int j = square_f[1];
-    int id1 = Board[x1][y1];
-    //(x1,y1) piece's initial square ; (i,j) piece's final square according to the Board notations
-    if (id1 == 50)
-    {
-        cout << "The initial square is empty" << endl;
     }
-    else
-    {
-        if (typeid(*pieces[id1]) == typeid(*pieces[8]))
+    do{
+        wrong_move = false;
+        do
         {
-            pawn_mouvement(x1, y1, i, j, id1);
-        }
-        else if (typeid(*pieces[id1]) == typeid(*pieces[4]) && (abs(y1 - j) == 2 || abs(y1 - j) == 3))
+            cout << "enter piece's initial square" << endl;
+            cin >> move_i;
+        } while (verify_move(move_i) == false);
+        do
         {
-            castle(i, j);
-            showBoard();
+            cout << "enter piece's direction square" << endl;
+            cin >> move_f;
+        } while (verify_move(move_f) == false);
+        //read the piece initial and togo squares
+        square_i = translate_move(move_i);
+        square_f = translate_move(move_f);
+        int x1 = square_i[0];
+        int y1 = square_i[1];
+        int i = square_f[0];
+        int j = square_f[1];
+        int id1 = Board[x1][y1];
+        //(x1,y1) piece's initial square ; (i,j) piece's final square according to the Board notations
+        if (id1 == 50)
+        {
+            cout << "The initial square is empty" << endl;
+            wrong_move = true;
         }
         else
         {
-            if (pieces[id1]->getcolor() == turn)
+            if (typeid(*pieces[id1]) == typeid(*pieces[8]))
             {
-                vector<vector<int>> c = target_Squares(x1, y1);
-                vector<vector<int>>::iterator it1;
-                it1 = find(c.begin(), c.end(), square_f);
-                if (it1 != c.end())
+                wrong_move = pawn_mouvement(x1, y1, i, j, id1);
+            }
+            else if (typeid(*pieces[id1]) == typeid(*pieces[4]) && (abs(y1 - j) == 2 || abs(y1 - j) == 3))
+            {
+                wrong_move = castle(i, j);
+            }
+            else
+            {
+                if (pieces[id1]->getcolor() == turn)
                 {
-                    int p = Board[i][j];
-                    abstractMove(x1, y1, i, j);
-                    if (turn == 1)
+                    vector<vector<int>> c = target_Squares(x1, y1);
+                    vector<vector<int>>::iterator it1;
+                    it1 = find(c.begin(), c.end(), square_f);
+                    if (it1 != c.end())
                     {
-                        if (id1 == 20)
+                        int p = Board[i][j];
+                        abstractMove(x1, y1, i, j);
+                        if (turn == 1)
                         {
-                            bkx = i;
-                            bky = j;
-                        }
-                        if (king_in_check(bkx, bky))
-                        {
-                            cout << "Black king is in check" << endl;
-                            abstractMove(i, j, x1, y1);
-                            Board[i][j] = p;
+                            if (id1 == 20)
+                            {
+                                bkx = i;
+                                bky = j;
+                            }
+                            if (king_in_check(bkx, bky))
+                            {
+                                cout << "Black king is in check" << endl;
+                                abstractMove(i, j, x1, y1);
+                                Board[i][j] = p;
+                                wrong_move = true;
+                            }
+                            else
+                            {
+                                pieces[id1]->sethm();
+                                setpmoved(100);
+                                showBoard();
+                                cout << "Black plays the move " << move_i << " to " << move_f << endl;
+                            }
                         }
                         else
                         {
-                            setpmoved(100);
-                            showBoard();
-                            cout << "Black plays the move " << move_i << " to " << move_f << endl;
-                            turn = 0;
+                            if (id1 == 4)
+                            {
+                                wkx = i;
+                                wky = j;
+                            }
+                            if (king_in_check(wkx, wky))
+                            {
+                                cout << "White king is in check" << endl;
+                                abstractMove(i, j, x1, y1);
+                                Board[i][j] = p;
+                                wrong_move = true;
+                            }
+                            else
+                            {
+                                pieces[id1]->sethm();
+                                setpmoved(100);
+                                cout<<"check1"<<endl;
+                                cout << "white plays the move " << move_i << " to " << move_f << endl;
+                            }
                         }
                     }
                     else
                     {
-                        if (id1 == 4)
-                        {
-                            wkx = i;
-                            wky = j;
-                        }
-                        if (king_in_check(wkx, wky))
-                        {
-                            cout << "White king is in check" << endl;
-                            abstractMove(i, j, x1, y1);
-                            Board[i][j] = p;
-                        }
-                        else
-                        {
-                            setpmoved(100);
-                            showBoard();
-                            cout << "white plays the move " << move_i << " to " << move_f << endl;
-                            turn = 1;
-                        }
+                        wrong_move = true;
                     }
                 }
                 else
                 {
-                    cout << "Illegal Move !" << endl;
+                    cout << "you picked the enemey piece as the initial square" << endl;
+                    wrong_move = true;
                 }
             }
-            else
-            {
-                cout << "you picked the enemey piece as the initial square" << endl;
-            }
         }
+        if (wrong_move == true){
+            cout << "Illegal Move!" << endl;
+        }
+    }while (wrong_move);
+}
+void Game::switchTurn(){
+    if (turn == 0){
+        turn = 1;
     }
+    else{
+        turn = 0;
+    }
+}
+void Game::play(){
+    move();
+    showBoard();
+    switchTurn();
 }

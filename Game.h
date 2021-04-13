@@ -39,17 +39,20 @@ public:
     void abstractMove(int, int, int, int);
     void showBoard();
     void Promotion(int i, int j);
-    void castle(int i, int j);
+    bool castle(int i, int j);
     bool king_in_check(int, int);
     bool InBetween_pieces(int, int, int, int);
     bool verify_move(string);
     vector<int> translate_move(string);
     void move();
-    void pawn_mouvement(int, int, int, int, int);
+    bool pawn_mouvement(int, int, int, int, int);
     void setpmoved(int x)
     {
         p_moved = x;
     }
+    void play();
+    void switchTurn();
+    
 };
 
 #endif
