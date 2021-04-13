@@ -18,33 +18,8 @@
 #include <algorithm>
 using namespace std;
 
-<<<<<<< HEAD
-class Game{
-    
-    private:
-        int turn;
-        int Board[8][8];
-        vector <Piece *> pieces;
-    public:
-        Game();
-        vector <vector<int>> target_Squares(int, int);
-        vector <vector<int>> white_Targets_Squares();
-        vector <vector<int>> black_Targets_Squares();
-        void putPiece(int ID);
-        void initiateBoard();
-        void abstractMove(int,int,int,int);
-        void showBoard();
-        void Promotion (int i, int j);
-        void move(int,int,int,int);
-        void castle (int i,int j);
-        bool king_in_check(int,int);
-        bool InBetween_pieces(int,int,int,int);
-        
-};
-=======
 class Game
 {
->>>>>>> cc
 
 private:
     int turn=0;
