@@ -27,7 +27,6 @@ class Piece{
         char getname();
         bool gethm();
         void sethm();
-        
         virtual bool legal_move(int ,int );
         
 
