@@ -477,14 +477,14 @@ bool Game ::verify_move(string move)
             else
             {
                 cout << "verify line entrence" << endl
-                     << move[1] << "th line doesn't exist" << endl;
+                     << move[1] << "line doesn't exist" << endl;
                 return false;
             }
         }
         else
         {
             cout << "verify column entrence " << endl
-                 << move[0] << ": column doesn't exsist" << endl;
+                 << move[0] << "column doesn't exsist" << endl;
             return false;
         }
     }
@@ -576,7 +576,6 @@ void Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                             Board[i - 1][j] = 50;
                             setpmoved(100);
                             showBoard();
-                            cout << "en passsssssssant" << endl;
                         }
                     }
                     else
@@ -586,7 +585,6 @@ void Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                 }
                 else if (Board[i][j] < 16)
                 {
-                    cout << "nope";
                     int p = Board[i][j];
                     abstractMove(x1, y1, i, j);
                     if (king_in_check(bkx, bky))
@@ -669,7 +667,6 @@ void Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                             Board[i + 1][j] = 50;
                             showBoard();
                             setpmoved(100);
-                            cout << "en passsssssssant" << endl;
                             turn = 1;
                         }
                     }
