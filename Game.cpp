@@ -81,7 +81,6 @@ void Game::putPiece(int ID)
 {
     Board[pieces[ID]->getx()][pieces[ID]->gety()] = pieces[ID]->getid();
 }
-
 void Game::initiateBoard()
 {
     for (int i = 2; i < 6; i++)
@@ -96,7 +95,6 @@ void Game::initiateBoard()
         putPiece(i);
     }
 }
-
 void Game::abstractMove(int x1, int y1, int x2, int y2)
 {
     int pid = Board[x1][y1];
@@ -108,7 +106,6 @@ void Game::abstractMove(int x1, int y1, int x2, int y2)
         pieces[pid]->sety(y2);
     }
 }
-
 void Game::showBoard()
 {
     cout << endl;
@@ -136,7 +133,6 @@ void Game::showBoard()
          << 'a' << setw(4) << 'b' << setw(4) << 'c' << setw(4) << 'd' << setw(4) << 'e' << setw(4) << 'f' << setw(4) << 'g' << setw(4) << 'h';
     cout << endl;
 }
-
 bool Game::InBetween_pieces(int x1, int y1, int x2, int y2)
 {
     int pid = Board[x1][y1];
@@ -195,7 +191,6 @@ bool Game::InBetween_pieces(int x1, int y1, int x2, int y2)
     }
     return false;
 }
-
 vector<vector<int>> Game::target_Squares(int X1, int Y1)
 {
     vector<vector<int>> squaresList;
@@ -281,7 +276,6 @@ vector<vector<int>> Game::target_Squares(int X1, int Y1)
     }
     return squaresList;
 }
-
 vector<vector<int>> Game::white_Targets_Squares()
 {
     vector<vector<int>> wts;
@@ -303,7 +297,6 @@ vector<vector<int>> Game::white_Targets_Squares()
     }
     return wts;
 }
-
 vector<vector<int>> Game::black_Targets_Squares()
 {
     vector<vector<int>> bts;
@@ -325,7 +318,6 @@ vector<vector<int>> Game::black_Targets_Squares()
     }
     return bts;
 }
-
 bool Game::king_in_check(int X, int Y)
 {
     vector<vector<int>> ts;
@@ -346,7 +338,6 @@ bool Game::king_in_check(int X, int Y)
         }
     return false;
 }
-
 void Game::Promotion(int i, int j)
 {
     int pid = Board[i][j];
@@ -355,7 +346,10 @@ void Game::Promotion(int i, int j)
     int C = pieces[pid]->getcolor();
     cout << " you can promote your pawn to Bishop, Knight, Rook or Queen" << endl;
     char choice;
-    cin >> choice;
+    do
+    {
+        cin >> choice;
+    } while (tolower(choice) != 'b' && tolower(choice) != 'n' && tolower(choice) != 'r' && tolower(choice) != 'q');
     if (turn == 0)
     {
         choice = tolower(choice);
@@ -364,33 +358,29 @@ void Game::Promotion(int i, int j)
     {
         choice = toupper(choice);
     }
-    do
+    switch (tolower(choice))
     {
-        switch (tolower(choice))
-        {
-        case 'b':
-            pieces[pid] = new Bishop(X, Y, C, pid, choice);
-            putPiece(pid);
-            break;
-        case 'n':
-            pieces[pid] = new Knight(X, Y, C, pid, choice);
-            putPiece(pid);
-            break;
-        case 'r':
-            pieces[pid] = new Rook(X, Y, C, pid, choice);
-            putPiece(pid);
-            break;
-        case 'q':
-            pieces[pid] = new Queen(X, Y, C, pid, choice);
-            putPiece(pid);
-            break;
-        default:
-            cout << "you picked the wrong piece!";
-            break;
-        }
-    } while (tolower(choice) != 'b' && tolower(choice) != 'n' && tolower(choice) != 'r' && tolower(choice) != 'q');
+    case 'b':
+        pieces[pid] = new Bishop(X, Y, C, pid, choice);
+        putPiece(pid);
+        break;
+    case 'n':
+        pieces[pid] = new Knight(X, Y, C, pid, choice);
+        putPiece(pid);
+        break;
+    case 'r':
+        pieces[pid] = new Rook(X, Y, C, pid, choice);
+        putPiece(pid);
+        break;
+    case 'q':
+        pieces[pid] = new Queen(X, Y, C, pid, choice);
+        putPiece(pid);
+        break;
+    default:
+        cout << "you picked the wrong piece!";
+        break;
+    }
 }
-
 bool Game::castle(int i, int j)
 {
     bool wrong_move = false;
@@ -531,9 +521,6 @@ bool Game::castle(int i, int j)
     }
     return wrong_move;
 }
-
-
-
 bool Game ::verify_move(string move)
 {
     vector<char> squares_c = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
@@ -560,7 +547,7 @@ bool Game ::verify_move(string move)
         else
         {
             cout << "verify column entrence " << endl
-                 << move[0] << "column doesn't exsist" << endl;
+                << move[0] << "column doesn't exsist" << endl;
             return false;
         }
     }
@@ -571,7 +558,6 @@ bool Game ::verify_move(string move)
         return false;
     }
 }
-
 vector<int> Game::translate_move(string move)
 {
     vector<char> squares_c = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
@@ -589,7 +575,6 @@ vector<int> Game::translate_move(string move)
     vector<int> square = {i, j};
     return square;
 }
-
 bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
 {
     bool I_moved = false;
@@ -643,7 +628,7 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                         abstractMove(x1, y1, i, j);
                         if (king_in_check(bkx, bky))
                         {
-                            cout << "Black's king is under check" << endl;
+                            cout << "Black's king is in check" << endl;
                             abstractMove(i, j, x1, y1);
                             Board[i][j] = p;
                         }
@@ -667,7 +652,7 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                     abstractMove(x1, y1, i, j);
                     if (king_in_check(bkx, bky))
                     {
-                        cout << "Black's king is under check" << endl;
+                        cout << "Black's king is in check" << endl;
                         abstractMove(i, j, x1, y1);
                         Board[i][j] = p;
                         wrong_move = true;
@@ -711,7 +696,7 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                     abstractMove(x1, y1, i, j);
                     if (king_in_check(wkx, wky))
                     {
-                        cout << "White's king is under check" << endl;
+                        cout << "White's king is in check" << endl;
                         abstractMove(i, j, x1, y1);
                         wrong_move = true;
                     }
@@ -739,7 +724,7 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                         abstractMove(x1, y1, i, j);
                         if (king_in_check(wkx, wky))
                         {
-                            cout << "white's king is under check" << endl;
+                            cout << "white's king is in check" << endl;
                             abstractMove(i, j, x1, y1);
                             Board[i][j] = p;
                             wrong_move = true;
@@ -763,7 +748,7 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                     abstractMove(x1, y1, i, j);
                     if (king_in_check(wkx, wky))
                     {
-                        cout << "White's king is under check" << endl;
+                        cout << "White's king is in check" << endl;
                         abstractMove(i, j, x1, y1);
                         Board[i][j] = p;
                         wrong_move = true;
@@ -790,7 +775,6 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
     }
     return wrong_move;
 }
-
 void Game::move()
 {
     string move_i, move_f;
@@ -824,10 +808,10 @@ void Game::move()
         //read the piece initial and togo squares
         square_i = translate_move(move_i);
         square_f = translate_move(move_f);
-        int x1 = square_i[0];
-        int y1 = square_i[1];
-        int i = square_f[0];
-        int j = square_f[1];
+        int x1  = square_i[0];
+        int y1  = square_i[1];
+        int i   = square_f[0];
+        int j   = square_f[1];
         int id1 = Board[x1][y1];
         //(x1,y1) piece's initial square ; (i,j) piece's final square according to the Board notations
         if (id1 == 50)
@@ -874,8 +858,6 @@ void Game::move()
                             {
                                 pieces[id1]->sethm();
                                 setpmoved(100);
-                                showBoard();
-                                cout << "Black plays the move " << move_i << " to " << move_f << endl;
                             }
                         }
                         else
@@ -896,8 +878,6 @@ void Game::move()
                             {
                                 pieces[id1]->sethm();
                                 setpmoved(100);
-                                cout<<"check1"<<endl;
-                                cout << "white plays the move " << move_i << " to " << move_f << endl;
                             }
                         }
                     }
