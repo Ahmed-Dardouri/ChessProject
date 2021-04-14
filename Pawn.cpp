@@ -15,8 +15,5 @@ bool Pawn::legal_move(int i,int j){
     if ((i == x) && (j == y)){
         ok = false;
     }
-    if (is_pinned){
-        ok = false;
-    }
     return ok;
 }
