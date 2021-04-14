@@ -13,7 +13,6 @@ class Piece{
         char name;
         bool hm = false;
     public:
-        
         Piece();
         void setx(int X);
         void sety(int Y);
@@ -25,8 +24,6 @@ class Piece{
         bool gethm();
         void sethm();
         virtual bool legal_move(int ,int );
-        
-
 };
 
 #endif
