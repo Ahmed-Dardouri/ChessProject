@@ -15,9 +15,6 @@ bool Knight::legal_move(int i,int j){
     if ((i == x) || (j == y)){
         ok = false;
     }
-    if (is_pinned){
-        ok = false;
-    }
     if (abs(x - i) == 2){
         if(abs(y - j) != 1){
             ok = false;

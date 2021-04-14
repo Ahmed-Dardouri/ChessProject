@@ -819,8 +819,10 @@ void Game::move()
             cout << "The initial square is empty" << endl;
             wrong_move = true;
         }
-        else
-        {
+        else if(square_i == square_f){
+            wrong_move = true;
+        }
+        else{
             if (typeid(*pieces[id1]) == typeid(*pieces[8]))
             {
                 wrong_move = pawn_mouvement(x1, y1, i, j, id1);
