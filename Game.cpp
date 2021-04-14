@@ -395,12 +395,11 @@ bool Game::castle(int i, int j)
             if ((InBetween_pieces(x1, y1, x1, y1 - 3) == false) && (Board[7][1] = 50) && (pieces[4]->gethm() == false) && (pieces[0]->gethm() == false))
             {
                 bool trouve = false;
-                for (int k = 0; k < bts.size(); k++)
+                for (int k = 0; k < bts.size() && trouve == true; k++)
                 {
                     if (bts[k][0] == 7 && (bts[k][1] == 2 || bts[k][1] == 3 || bts[k][1] == 4))
                     {
                         trouve = true;
-                        break;
                     }
                 }
                 if (trouve == false)
@@ -424,12 +423,11 @@ bool Game::castle(int i, int j)
             if ((InBetween_pieces(x1, y1, x1, y1 + 2) == false) && (Board[7][6] = 50) && (pieces[4]->gethm() == false) && (pieces[7]->gethm() == false))
             {
                 bool trouve = false;
-                for (int k = 0; k < bts.size(); k++)
+                for (int k = 0; k < bts.size() && trouve == true; k++)
                 {
                     if (bts[k][0] == 7 && (bts[k][1] == 5 || bts[k][1] == 6 || bts[k][1] == 4))
                     {
                         trouve = true;
-                        break;
                     }
                 }
                 if (trouve == false)
@@ -463,12 +461,11 @@ bool Game::castle(int i, int j)
             if ((InBetween_pieces(x1, y1, x1, y1 - 3) == false) && (Board[0][1] = 50) && (pieces[20]->gethm() == false) && (pieces[16]->gethm() == false))
             {
                 bool trouve = false;
-                for (int k = 0; k < wts.size(); k++)
+                for (int k = 0; k < wts.size() && trouve == true; k++)
                 {
                     if (wts[k][0] == 0 && (wts[k][1] == 2 || wts[k][1] == 3 || wts[k][1] == 4))
                     {
                         trouve = true;
-                        break;
                     }
                 }
                 if (trouve == false)
@@ -492,12 +489,11 @@ bool Game::castle(int i, int j)
             if ((InBetween_pieces(x1, y1, x1, y1 + 2) == false) && (Board[0][6] = 50) && (pieces[20]->gethm() == false) && (pieces[23]->gethm() == false))
             {
                 bool trouve = false;
-                for (int k = 0; k < wts.size(); k++)
+                for (int k = 0; k < wts.size() && trouve == true; k++)
                 {
                     if (wts[k][0] == 0 && (wts[k][1] == 5 || wts[k][1] == 6 || wts[k][1] == 4))
                     {
                         trouve = true;
-                        break;
                     }
                 }
                 if (trouve == false)
@@ -563,14 +559,15 @@ vector<int> Game::translate_move(string move)
     vector<char> squares_c = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
     vector<char> squares_n = {'1', '2', '3', '4', '5', '6', '7', '8'};
 
-    int j;
-    for (j = 0; j != 8; j++)
-        if (move[0] == squares_c[j])
-            break;
-    int i;
-    for (i = 0; i != 8; i++)
-        if (move[1] == squares_n[i])
-            break;
+    
+    int j=0;
+    while(move[0]!=squares_c[j]) { 
+        j++;
+    }
+    int i=0;
+    while (move[1]!=squares_n[i]){
+        i++;
+    }
     i = 7 - i;
     vector<int> square = {i, j};
     return square;
