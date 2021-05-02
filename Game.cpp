@@ -576,6 +576,7 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
 {
     bool I_moved = false;
     bool wrong_move = false;
+    int p_moved_value = p_moved;
     if (turn == 1)
     {
         int bkx = pieces[20]->getx();
@@ -603,10 +604,15 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                         abstractMove(i, j, x1, y1);
                         Board[i][j]=p;
                         wrong_move = true;
+                        setpmoved(p_moved_value);
+                    }
+                    else if(test == true){
+                        abstractMove(i, j, x1, y1);
+                        Board[i][j]=p;
+                        setpmoved(p_moved_value);
                     }
                     else
                     {
-                        pieces[id1]->sethm();
                         I_moved = true;
                     }
                 }
@@ -820,9 +826,13 @@ void Game::move()
             wrong_move = true;
         }
         else{
-            if (typeid(*pieces[id1]) == typeid(*pieces[8]))
-            {
-                wrong_move = pawn_mouvement(x1, y1, i, j, id1);
+            if (typeid(*pieces[id1]) == typeid(*pieces[8])){
+                if (InBetween_pieces(x1,y1,i,j) == false){
+                    wrong_move = pawn_mouvement(x1, y1, i, j, id1);
+                }
+                else{
+                    wrong_move == true;
+                }
             }
             else if (typeid(*pieces[id1]) == typeid(*pieces[4]) && (abs(y1 - j) == 2 || abs(y1 - j) == 3))
             {
@@ -853,6 +863,12 @@ void Game::move()
                                 Board[i][j] = p;
                                 wrong_move = true;
                             }
+                            /*
+                            else if(test == true){
+                                abstractMove(i, j, x1, y1);
+                                Board[i][j] = p;
+                                wrong_move = true;
+                            }*/
                             else
                             {
                                 pieces[id1]->sethm();
@@ -906,7 +922,26 @@ void Game::switchTurn(){
     }
 }
 void Game::play(){
+    /*
+    ok = false
+    test = false
+    while (ok == false){
+        input move()
+        ok = move()
+    }
+    */
     move();
     showBoard();
+    /*
+    ok1 = false
+    test = true
+    for (int i = 0; i<8 && ok == false;i++){
+        for(int j = 0; j<8 && ok == false;j++){
+            ok = move()
+        }
+        
+    }
+    */
     switchTurn();
+
 }
