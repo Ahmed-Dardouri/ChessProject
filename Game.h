@@ -26,7 +26,8 @@ private:
     int Board[8][8];
     vector<Piece *> pieces;
     int p_moved=100;
-
+    bool test;
+    bool game_over = false;
 public:
     Game();
     vector<vector<int>> target_Squares(int, int);
@@ -44,16 +45,15 @@ public:
     bool InBetween_pieces(int, int, int, int);
     bool verify_move(string);
     vector<int> translate_move(string);
-    void move();
     bool pawn_mouvement(int, int, int, int, int);
+    vector<int> input_move();
+    bool move (int,int,int,int);
     void setpmoved(int x)
     {
         p_moved = x;
     }
     void play();
-    void switchTurn();
-    
+    void switchTurn();  
 };
 
 #endif
-//hi
