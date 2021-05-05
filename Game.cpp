@@ -70,16 +70,19 @@ Game::Game()
     pieces.push_back(bph);
 
     initiateBoard();
+    for(int i = 0; i< 8; i++){
+        for(int j = 0; j < 8;j++){
+            int pid = Board[i][j];
+            if(pid != 3 && pid != 4 && pid != 20){
+                abstractMove(i,j,1,0);
+            }
+        }
+    }
     showBoard();
     while (game_over == false)
     {
         play();
-        vector<vector<int>> ts = target_Squares(pieces[3]->getx(),pieces[3]->gety());
-        cout<<"qt: ";
-        for (int i = 0; i < ts.size(); i++){
-            cout<<"("<<ts[i][0]<<","<<ts[i][1]<<") ";
-        }
-        cout<<endl;
+        
     }
 }
 void Game::putPiece(int ID)
@@ -815,19 +818,20 @@ void Game::play(){
         ok = move(mv[0],mv[1],mv[2],mv[3]);
     }
     showBoard();
+    
     switchTurn();
     test = true;
     bool ok1 = false;
-    cout<<"start ok1 = "<<ok1<<endl;
     for (int i = 0; i<8 && ok1 == false; i++){
-        for (int j = 0; i<7 && ok1 == false; j++){
+        for (int j = 0; j<8 && ok1 == false; j++){
             int pid = Board[i][j];
             if (pid < 32){
                 if (pieces[pid]->getcolor() == turn){
-                    vector<vector<int>> t = target_Squares(i,j);
+                    vector<vector<int>> * t = new vector<vector<int>>;
+                    *t = target_Squares(i,j);
                     if (typeid(*pieces[pid]) == typeid(*pieces[8])){
-                        for (int k = 0; k < t.size() && ok1 == false; k++){
-                            ok1 = move(i,j,t[k][0],t[k][1]);
+                        for (int k = 0; k < t->size() && ok1 == false; k++){
+                            ok1 = move(i,j,t->operator[](k)[0],t->operator[](k)[1]);
                         }
                         if (ok1 == false){
                             if (turn == 0){
@@ -845,18 +849,15 @@ void Game::play(){
                         }
                     }
                     else{
-                        for (int k = 0; k < t.size() && ok1 == false; k++){
-                            ok1 = move(i,j,t[k][0],t[k][1]);
-                            if (ok == true){
-                                cout<<"("<<t[k][0]<<","<<t[k][1]<<")"<<endl;
-                            }
+                        for (int k = 0; k < t->size() && ok1 == false; k++){
+                            ok1 = move(i,j,t->operator[](k)[0],t->operator[](k)[1]);
                         }
                     }
+                    delete t;
                 }
             }
         }
     }
-    cout<<"ok1 = "<<ok1<<endl;
     if (ok1 == false){
         cout<<"game over"<<endl;
         game_over = true;
@@ -874,7 +875,7 @@ void Game::play(){
             int bkx = pieces[20]->getx();
             int bky = pieces[20]->gety();
             if (king_in_check(bkx,bky)){
-                cout<<"black wins"<<endl;
+                cout<<"white wins"<<endl;
             }
             else{
                 cout<<"stalemate"<<endl;
@@ -957,9 +958,14 @@ bool Game:: move (int x1, int y1, int i, int j){
             {
                 vector<int> square_f = {i,j};
                 vector<vector<int>> c = target_Squares(x1, y1);
-                vector<vector<int>>::iterator it1;
-                it1 = find(c.begin(), c.end(), square_f);
-                if (it1 != c.end())
+                bool found = false;
+
+                for (int i = 0;i < c.size() && found == false; i++){
+                    if (c[i] == square_f){
+                        found = true;
+                    }
+                }
+                if (found = true)
                 {
                     int p = Board[i][j];
                     abstractMove(x1, y1, i, j);
@@ -1007,9 +1013,8 @@ bool Game:: move (int x1, int y1, int i, int j){
                         }
                         else if (test==true )
                         {
-                            abstractMove(i,j,x1,y1);
+                            abstractMove(i, j, x1, y1);
                             Board[i][j]=p;
-
                         }
                         else{
                             pieces[id1]->sethm();
