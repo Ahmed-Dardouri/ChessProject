@@ -1,5 +1,5 @@
 #include "Game.h"
-#include <iostream>
+
 Game::Game()
 {
 
@@ -69,21 +69,193 @@ Game::Game()
     pieces.push_back(bpg);
     pieces.push_back(bph);
 
-    initiateBoard();
-    for(int i = 0; i< 8; i++){
-        for(int j = 0; j < 8;j++){
-            int pid = Board[i][j];
-            if(pid != 3 && pid != 4 && pid != 20){
-                abstractMove(i,j,1,0);
+    //initiateBoard();
+    /////////////////
+    
+    
+
+    Vector2f offset{28,28};
+
+    RenderWindow window(VideoMode(504, 504), "Chess");
+
+    Texture t1,t2,tw,tb,ts;
+    t1.loadFromFile("images/figures.png"); 
+    t2.loadFromFile("images/board19.png");
+    tw.loadFromFile("images/wwin.png");
+    tb.loadFromFile("images/bwin.png");
+    ts.loadFromFile("images/stale.png");
+    Sprite background;
+    Sprite wwinbg;
+    Sprite bwinbg;
+    Sprite sbg;
+    background.setTexture(t2);
+    wwinbg.setTexture(tw);
+    bwinbg.setTexture(tb);
+    sbg.setTexture(ts);
+
+    for(int i=0;i<32;i++) {
+        f[i].setTexture(t1);
+        f[i].setPosition(-100,-100);
+    }
+
+    bool isMove=false;
+    float dx=0, dy=0;
+    Vector2f oldPos,newPos;
+    Vector2f oldPosCords;
+    Vector2f newPosCords;
+    int n=0;
+
+    loadPosition();
+    while (window.isOpen()){
+        test = false;
+        Vector2i pos = Mouse::getPosition(window) - Vector2i(offset);
+        Event e;
+        while (window.pollEvent(e)){
+            if (e.type == Event::Closed){
+                window.close();
+            }
+                
+            /////drag and drop///////
+            if (e.type == Event::MouseButtonPressed){ 
+                if (e.key.code == Mouse::Left){
+                    std::cout<<"mouse position is ["<<pos.x + 28<<","<<pos.y +28<<"]"<<std::endl;
+                    for(int i=0;i<32;i++){
+                        if (f[i].getGlobalBounds().contains(pos.x,pos.y)){
+                            std::cout<<"piece is "<<i<<pieces[i]->getname()<<std::endl;
+                            isMove=true;
+                            n=i;
+                            dx=pos.x - f[i].getPosition().x;
+                            dy=pos.y - f[i].getPosition().y;
+                            oldPosCords  =  Vector2f {pieces[i]->gety(),pieces[i]->getx()};
+                           
+                        }
+                    }
+                }
+            }
+            if (e.type == Event::MouseButtonReleased){
+                if (e.key.code == Mouse::Left){
+                    isMove=false;
+                    Vector2f p = f[n].getPosition() + Vector2f(size/2,size/2);
+                    newPos = Vector2f( size*int(p.x/size), size*int(p.y/size));
+                    newPosCords.x = newPos.y/size;
+                    newPosCords.y = newPos.x/size;
+                    
+                    bool lMove = move(oldPosCords.y,oldPosCords.x,newPosCords.x,newPosCords.y);
+                    loadPosition();
+                    if(lMove){
+                        std::cout<<"inb = "<<InBetween_pieces(1,0,2,0)<<std::endl;
+                        switchTurn();
+                        test = true;
+                        bool ok1 = false;
+                        for (int i = 0; i<8 && ok1 == false; i++){
+                            for (int j = 0; j<8 && ok1 == false; j++){
+                                int pid = Board[i][j];
+                                if (pid < 32){
+                                    if (pieces[pid]->getcolor() == turn){
+                                        vector<vector<int>> t = target_Squares(i,j);
+                                        if (typeid(*pieces[pid]) == typeid(*pieces[8])){
+                                            for (int k = 0; k < t.size() && ok1 == false; k++){
+                                                if (InBetween_pieces(i,j,t[k][0],t[k][1]) == false){
+                                                    ok1 = !pawn_mouvement(i, j, t[k][0], t[k][1], pid);
+                                                }
+                                            }
+                                            if (ok1 == false){
+                                                if (turn == 0){
+                                                    if (InBetween_pieces(i,j,i-1,j) == false){
+                                                        ok1 = !pawn_mouvement(i,j, i-1, j, pid);
+                                                    }
+                                                    if(i == 6 && ok1 == false){
+                                                        if (InBetween_pieces(i,j,i-2,j) == false){
+                                                            ok1 = !pawn_mouvement(i,j, i-2, j, pid);
+                                                        }
+                                                    }
+                                                }
+                                                else{
+                                                    if (InBetween_pieces(i,j,i+1,j) == false){
+                                                        ok1 = !pawn_mouvement(i,j, i+1, j, pid);
+                                                    }
+                                                    if(i == 1 && ok1 == false){
+                                                        if (InBetween_pieces(i,j,i+2,j) == false){
+                                                            ok1 = !pawn_mouvement(i,j, i+2, j, pid);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else{
+                                            for (int k = 0; k < t.size() && ok1 == false; k++){
+                                                ok1 = move(i,j,t[k][0],t[k][1]);
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                            }
+                        }
+                        if (ok1 == false){
+                            std::cout<<"game over"<<std::endl;
+                            game_over = true;
+                        }
+                    }
+                }
+            } 
+            if (isMove) {
+                f[n].setPosition(pos.x-dx,pos.y-dy);
+            }
+        }
+        if(!game_over){
+            window.clear();
+            window.draw(background);
+            
+            for(int i=0;i<32;i++) {
+                f[i].move(offset);
+            }
+            for(int i=0;i<8;i++) {
+                for(int j = 0;j<8;j++){
+                    int pid = Board[i][j];
+                    if(pid < 32){
+                        window.draw(f[pid]);
+                    }
+                }
+            } 
+            for(int i=0;i<32;i++) {
+                f[i].move(-offset);
+            }
+            window.display();
+        }else{
+            if (turn == 0){
+                int wkx = pieces[4]->getx();
+                int wky = pieces[4]->gety();
+                if (king_in_check(wkx,wky)){
+                    window.clear();
+                    window.draw(bwinbg);
+                    window.display();
+                }
+                else{
+                    window.clear();
+                    window.draw(sbg);
+                    window.display();
+                }
+            }
+            else{
+                int bkx = pieces[20]->getx();
+                int bky = pieces[20]->gety();
+                if (king_in_check(bkx,bky)){
+                    window.clear();
+                    window.draw(wwinbg);
+                    window.display();
+                }
+                else{
+                    window.clear();
+                    window.draw(sbg);
+                    window.display();
+                }
             }
         }
     }
-    showBoard();
-    while (game_over == false)
-    {
-        play();
-        
-    }
+
+
+    /////////////////
 }
 void Game::putPiece(int ID)
 {
@@ -116,30 +288,30 @@ void Game::abstractMove(int x1, int y1, int x2, int y2)
 }
 void Game::showBoard()
 {
-    cout << endl;
+    std::cout << std::endl;
 
     for (int i = 0; i < 8; i++)
     {
-        cout << setw(4) << 8 - i << setw(20);
+        std::cout << setw(4) << 8 - i << setw(20);
         for (int j = 0; j < 8; j++)
         {
             if (Board[i][j] != 50)
             {
-                cout << setw(4);
-                cout << pieces[Board[i][j]]->getname();
+                std::cout << setw(4);
+                std::cout << pieces[Board[i][j]]->getname();
             }
             else
             {
-                cout << setw(4);
-                cout << ".";
+                std::cout << setw(4);
+                std::cout << ".";
             }
         }
-        cout << endl;
+        std::cout << std::endl;
     }
-    cout << setw(8);
-    cout << endl
+    std::cout << setw(8);
+    std::cout << std::endl
          << 'a' << setw(4) << 'b' << setw(4) << 'c' << setw(4) << 'd' << setw(4) << 'e' << setw(4) << 'f' << setw(4) << 'g' << setw(4) << 'h';
-    cout << endl;
+    std::cout << std::endl;
 }
 bool Game::InBetween_pieces(int x1, int y1, int x2, int y2)
 {
@@ -353,11 +525,11 @@ void Game::Promotion(int i, int j)
     int X = pieces[pid]->getx();
     int Y = pieces[pid]->gety();
     int C = pieces[pid]->getcolor();
-    cout << " you can promote your pawn to Bishop, Knight, Rook or Queen" << endl;
+    std::cout << " you can promote your pawn to Bishop, Knight, Rook or Queen" << std::endl;
     char choice;
     do
     {
-        cin >> choice;
+        std::cin >> choice;
     } while (tolower(choice) != 'b' && tolower(choice) != 'n' && tolower(choice) != 'r' && tolower(choice) != 'q');
     if (turn == 0)
     {
@@ -386,7 +558,7 @@ void Game::Promotion(int i, int j)
         putPiece(pid);
         break;
     default:
-        cout << "you picked the wrong piece!";
+        std::cout << "you picked the wrong piece!";
         break;
     }
 }
@@ -547,22 +719,22 @@ bool Game ::verify_move(string move)
 
             else
             {
-                cout << "verify line entrence" << endl
-                     << move[1] << "line doesn't exist" << endl;
+                std::cout << "verify line entrence" << std::endl
+                     << move[1] << "line doesn't exist" << std::endl;
                 return false;
             }
         }
         else
         {
-            cout << "verify column entrence " << endl
-                << move[0] << "column doesn't exsist" << endl;
+            std::cout << "verify column entrence " << std::endl
+                << move[0] << "column doesn't exsist" << std::endl;
             return false;
         }
     }
 
     else
     {
-        cout << "enter the correct position" << endl;
+        std::cout << "enter the correct position" << std::endl;
         return false;
     }
 }
@@ -610,7 +782,7 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                     abstractMove(x1, y1, i, j);
                     if (king_in_check(bkx, bky))
                     {
-                        cout << "Black king is in check" << endl;
+                        std::cout << "Black king is in check" << std::endl;
                         abstractMove(i, j, x1, y1);
                         wrong_move = true;
                         setpmoved(p_moved_value);
@@ -637,7 +809,7 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                         Board[i - 1][j] = 50;
                         if (king_in_check(bkx, bky))
                         {
-                            cout << "Black's king is in check" << endl;
+                            std::cout << "Black's king is in check" << std::endl;
                             abstractMove(i, j, x1, y1);
                             Board[i - 1][j] = id2;
                             wrong_move=true;
@@ -663,7 +835,7 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                     abstractMove(x1, y1, i, j);
                     if (king_in_check(bkx, bky))
                     {
-                        cout << "Black's king is in check" << endl;
+                        std::cout << "Black's king is in check" << std::endl;
                         abstractMove(i, j, x1, y1);
                         Board[i][j] = p;
                         wrong_move = true;
@@ -692,7 +864,7 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
             wrong_move = true;
         }
     }
-    else //white
+    else//white
     {
         int wkx = pieces[4]->getx();
         int wky = pieces[4]->gety();
@@ -713,7 +885,7 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                     abstractMove(x1, y1, i, j);
                     if (king_in_check(wkx, wky))
                     {
-                        cout << "White's king is in check" << endl;
+                        std::cout << "White's king is in check" << std::endl;
                         abstractMove(i, j, x1, y1);
                         wrong_move = true;
                         setpmoved(p_moved_value);
@@ -743,7 +915,7 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                         Board[i + 1][j] = 50;
                         if (king_in_check(wkx, wky))
                         {
-                            cout << "white's king is in check" << endl;
+                            std::cout << "white's king is in check" << std::endl;
                             abstractMove(i, j, x1, y1);
                             Board[i + 1][j] = id2;
                             wrong_move = true;
@@ -770,7 +942,7 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                     abstractMove(x1, y1, i, j);
                     if (king_in_check(wkx, wky))
                     {
-                        cout << "White's king is in check" << endl;
+                        std::cout << "White's king is in check" << std::endl;
                         abstractMove(i, j, x1, y1);
                         Board[i][j] = p;
                         wrong_move = true;
@@ -798,7 +970,11 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                 }
             }
         }
+        else{
+        wrong_move = true;
+        }
     }
+    
     return wrong_move;
 }
 void Game::switchTurn(){
@@ -809,102 +985,28 @@ void Game::switchTurn(){
         turn = 0;
     }
 }
-void Game::play(){
-    bool ok = false;
-    test = false;
-    while (ok == false){
-        vector <int> mv;
-        mv = input_move();
-        ok = move(mv[0],mv[1],mv[2],mv[3]);
-    }
-    showBoard();
-    
-    switchTurn();
-    test = true;
-    bool ok1 = false;
-    for (int i = 0; i<8 && ok1 == false; i++){
-        for (int j = 0; j<8 && ok1 == false; j++){
-            int pid = Board[i][j];
-            if (pid < 32){
-                if (pieces[pid]->getcolor() == turn){
-                    vector<vector<int>> * t = new vector<vector<int>>;
-                    *t = target_Squares(i,j);
-                    if (typeid(*pieces[pid]) == typeid(*pieces[8])){
-                        for (int k = 0; k < t->size() && ok1 == false; k++){
-                            ok1 = move(i,j,t->operator[](k)[0],t->operator[](k)[1]);
-                        }
-                        if (ok1 == false){
-                            if (turn == 0){
-                                ok1 = move(i,j,i-1,j);
-                                if(i == 6 && ok == false){
-                                    ok1 = move(i,j,i-2,j);
-                                }
-                            }
-                            else{
-                                ok1 = move(i,j,i+1,j);
-                                if(i == 1 && ok == false){
-                                    ok1 = move(i,j,i+2,j);
-                                }
-                            }
-                        }
-                    }
-                    else{
-                        for (int k = 0; k < t->size() && ok1 == false; k++){
-                            ok1 = move(i,j,t->operator[](k)[0],t->operator[](k)[1]);
-                        }
-                    }
-                    delete t;
-                }
-            }
-        }
-    }
-    if (ok1 == false){
-        cout<<"game over"<<endl;
-        game_over = true;
-        if (turn == 0){
-            int wkx = pieces[4]->getx();
-            int wky = pieces[4]->gety();
-            if (king_in_check(wkx,wky)){
-                cout<<"black wins"<<endl;
-            }
-            else{
-                cout<<"stalemate"<<endl;
-            }
-        }
-        else{
-            int bkx = pieces[20]->getx();
-            int bky = pieces[20]->gety();
-            if (king_in_check(bkx,bky)){
-                cout<<"white wins"<<endl;
-            }
-            else{
-                cout<<"stalemate"<<endl;
-            }
-        }
-    }
-}
 vector<int> Game::input_move(){
     string move_i;
     string move_f;
     vector<int> m;
     if (turn == 0)
     {
-        cout << "White's turn to play" << endl;
+        std::cout << "White's turn to play" << std::endl;
     }
     else
     {
-        cout << "black's Turn to play" << endl;
+        std::cout << "black's Turn to play" << std::endl;
     }
     do
     {
-        cout << "enter piece's initial square" << endl;
-        cin >> move_i;
+        std::cout << "enter piece's initial square" << std::endl;
+        std::cin >> move_i;
     }
     while (verify_move(move_i) == false);
     do
     {
-        cout << "enter piece's direction square" << endl;
-        cin >> move_f;
+        std::cout << "enter piece's direction square" << std::endl;
+        std::cin >> move_f;
     }
     while (verify_move(move_f) == false);
 
@@ -932,7 +1034,7 @@ bool Game:: move (int x1, int y1, int i, int j){
     //(x1,y1) piece's initial square ; (i,j) piece's final square according to the Board notations
     if (id1 == 50)
     {
-        cout << "The initial square is empty" << endl;
+        std::cout << "The initial square is empty" << std::endl;
         wrong_move = true;
     }
     else if(x1 == i && y1 == j){
@@ -941,32 +1043,26 @@ bool Game:: move (int x1, int y1, int i, int j){
     else {
         if (typeid(*pieces[id1]) == typeid(*pieces[8]))
         {
-             if (InBetween_pieces(x1,y1,i,j) == false){
+            if (InBetween_pieces(x1,y1,i,j) == false){
                 wrong_move = pawn_mouvement(x1, y1, i, j, id1);
             }
             else{
                 wrong_move == true;
             }
         }
-        else if (typeid(*pieces[id1]) == typeid(*pieces[4]) && (abs(y1 - j) == 2 || abs(y1 - j) == 3))
+        else if (typeid(*pieces[id1]) == typeid(*pieces[4]) && (abs(y1 - j) == 3 || abs(y1 - j) == 4))
         {
             wrong_move = castle(i, j);
         }
         else
         {
+            vector<int> square_f = {i,j};
             if (pieces[id1]->getcolor() == turn)
             {
-                vector<int> square_f = {i,j};
                 vector<vector<int>> c = target_Squares(x1, y1);
-                bool found = false;
-
-                for (int i = 0;i < c.size() && found == false; i++){
-                    if (c[i] == square_f){
-                        found = true;
-                    }
-                }
-                if (found = true)
-                {
+                vector<vector<int>>::iterator it1;
+                it1 = find(c.begin(), c.end(), square_f);
+                if (it1 != c.end()){
                     int p = Board[i][j];
                     abstractMove(x1, y1, i, j);
                     if (turn == 1)
@@ -979,7 +1075,7 @@ bool Game:: move (int x1, int y1, int i, int j){
                         if (king_in_check(bkx, bky))
                         {
                             if(test == false){
-                                cout << "Black king is in check here" << endl;
+                                std::cout << "Black king is in check here" << std::endl;
                             }
                             abstractMove(i, j, x1, y1);
                             Board[i][j] = p;
@@ -1005,7 +1101,7 @@ bool Game:: move (int x1, int y1, int i, int j){
                         if (king_in_check(wkx, wky))
                         {
                             if(test == false){
-                                cout << "white king is in check here" << endl;
+                                std::cout << "white king is in check here" << std::endl;
                             }
                             abstractMove(i, j, x1, y1);
                             Board[i][j] = p;
@@ -1029,10 +1125,73 @@ bool Game:: move (int x1, int y1, int i, int j){
             }
             else
             {
-                cout << "you picked the enemey piece as the initial square" << endl;
+                std::cout << "you picked the enemey piece as the initial square" << std::endl;
                 wrong_move = true;
             }
         }
     }
     return (!wrong_move);
+}
+void Game::loadTexture(int id){
+    char name = pieces[id]->getname();
+    switch (name){
+        case 'r':
+            f[id].setTextureRect(IntRect(size*0,size*1,size,size));
+            break;
+        case 'n':
+            f[id].setTextureRect(IntRect(size*1,size*1,size,size));
+            break;
+        case 'b':
+            f[id].setTextureRect(IntRect(size*2,size*1,size,size));
+            break;
+        case 'q':
+            f[id].setTextureRect(IntRect(size*3,size*1,size,size));
+            break;
+        case 'k':
+            f[id].setTextureRect(IntRect(size*4,size*1,size,size));
+            break;
+        case 'p':
+            f[id].setTextureRect(IntRect(size*5,size*1,size,size));
+            break;
+        case 'R':
+            f[id].setTextureRect(IntRect(size*0,size*0,size,size));
+            break;
+        case 'N':
+            f[id].setTextureRect(IntRect(size*1,size*0,size,size));
+            break;
+        case 'B':
+            f[id].setTextureRect(IntRect(size*2,size*0,size,size));
+            break;
+        case 'Q':
+            f[id].setTextureRect(IntRect(size*3,size*0,size,size));
+            break;
+        case 'K':
+            f[id].setTextureRect(IntRect(size*4,size*0,size,size));
+            break;
+        case 'W':
+            f[id].setTextureRect(IntRect(size*5,size*0,size,size));
+            break;
+        default:
+            break;
+    }
+}
+void Game::loadPosition(){
+    int ids[32] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31};
+    for(int i=0;i<8;i++){
+        for(int j=0;j<8;j++){
+            int pid = Board[i][j];
+            if (pid < 32){
+                loadTexture(pid);
+                int x = pieces[pid]->getx();
+                int y = pieces[pid]->gety();
+                f[pid].setPosition(size*y,size*x);
+                ids[pid] = -1;
+            }
+        }
+    }
+    for (int i = 0; i <32;i++){
+        if(ids[i]>0){
+            f[i].setPosition(-100,-100);
+        }
+    }
 }
