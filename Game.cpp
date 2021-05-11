@@ -73,7 +73,20 @@ Game::Game()
     /////////////////
     
     
+    
+    
+    sf::SoundBuffer bm,bc,bo,bs;
+    bm.loadFromFile("sound/move_sound.wav");
+    bc.loadFromFile("sound/check_sound.wav");
+    bo.loadFromFile("sound/game_over_sound.wav");
+    bs.loadFromFile("sound/game_start_sound.wav");
 
+    sf::Sound sm,sc,so,ss;
+    sm.setBuffer(bm);
+    sc.setBuffer(bc);
+    so.setBuffer(bo);
+    ss.setBuffer(bs);
+    ss.play();
     Vector2f offset{28,28};
 
     RenderWindow window(VideoMode(504, 504), "Chess");
@@ -127,7 +140,6 @@ Game::Game()
                             dx=pos.x - f[i].getPosition().x;
                             dy=pos.y - f[i].getPosition().y;
                             oldPosCords  =  Vector2f {pieces[i]->gety(),pieces[i]->getx()};
-                           
                         }
                     }
                 }
@@ -143,8 +155,27 @@ Game::Game()
                     bool lMove = move(oldPosCords.y,oldPosCords.x,newPosCords.x,newPosCords.y);
                     loadPosition();
                     if(lMove){
-                        std::cout<<"inb = "<<InBetween_pieces(1,0,2,0)<<std::endl;
                         switchTurn();
+                        if (turn == 0){
+                            int wkx = pieces[4]->getx();
+                            int wky = pieces[4]->gety();
+                            if (king_in_check(wkx,wky)){
+                                sc.play();
+                            }
+                            else{
+                                sm.play();
+                            }
+                        }
+                        else{
+                            int bkx = pieces[20]->getx();
+                            int bky = pieces[20]->gety();
+                            if (king_in_check(bkx,bky)){
+                                sc.play();
+                            }
+                            else{
+                                sm.play();
+                            }
+                        }
                         test = true;
                         bool ok1 = false;
                         for (int i = 0; i<8 && ok1 == false; i++){
@@ -189,11 +220,11 @@ Game::Game()
                                         }
                                     }
                                 }
-                                
                             }
                         }
                         if (ok1 == false){
                             std::cout<<"game over"<<std::endl;
+                            so.play();
                             game_over = true;
                         }
                     }
