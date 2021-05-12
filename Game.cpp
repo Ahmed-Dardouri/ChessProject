@@ -70,11 +70,12 @@ Game::Game()
     pieces.push_back(bph);
 
     //initiateBoard();
-    /////////////////
+    void selectChoice(Game g);
     
-    
-    
-    
+    Vector2f offset{28,28};
+
+    RenderWindow window(VideoMode(504, 504), "Chess");
+
     sf::SoundBuffer bm,bc,bo,bs;
     bm.loadFromFile("sound/move_sound.wav");
     bc.loadFromFile("sound/check_sound.wav");
@@ -87,30 +88,52 @@ Game::Game()
     so.setBuffer(bo);
     ss.setBuffer(bs);
     ss.play();
-    Vector2f offset{28,28};
 
-    RenderWindow window(VideoMode(504, 504), "Chess");
+    Texture  t1,bg,tw,tb,ts,chover,border;
 
-    Texture t1,t2,tw,tb,ts;
     t1.loadFromFile("images/figures.png"); 
-    t2.loadFromFile("images/board19.png");
+    bg.loadFromFile("images/bg.png");
     tw.loadFromFile("images/wwin.png");
     tb.loadFromFile("images/bwin.png");
     ts.loadFromFile("images/stale.png");
+    chover.loadFromFile("images/white_square.png");  
+    border.loadFromFile("images/border.png"); 
+
     Sprite background;
+    Sprite bdd;
     Sprite wwinbg;
     Sprite bwinbg;
     Sprite sbg;
-    background.setTexture(t2);
+    Sprite check_overlay;
+    
+    background.setTexture(bg);
+    bdd.setTexture(border);
     wwinbg.setTexture(tw);
     bwinbg.setTexture(tb);
     sbg.setTexture(ts);
+    check_overlay.setTexture(chover);
+
+    check_overlay.setColor(sf::Color(255, 156, 156));
+    bdd.setColor(sf::Color(28, 32, 36));
+    check_overlay.setPosition(-100,-100);
+    bdd.setPosition(10,10);
+
+    
+    int k = 0;
+    for (int i =0;i <8;i++){
+        for(int j = 0;j<8;j++){
+            squares[k].setTexture(chover);
+            squares[k].setPosition(size*i,size*j);
+            squares[k].move(offset);
+            k++;
+        }
+    }
+    colorSquares();
 
     for(int i=0;i<32;i++) {
         f[i].setTexture(t1);
         f[i].setPosition(-100,-100);
     }
-
     bool isMove=false;
     float dx=0, dy=0;
     Vector2f oldPos,newPos;
@@ -131,10 +154,8 @@ Game::Game()
             /////drag and drop///////
             if (e.type == Event::MouseButtonPressed){ 
                 if (e.key.code == Mouse::Left){
-                    std::cout<<"mouse position is ["<<pos.x + 28<<","<<pos.y +28<<"]"<<std::endl;
                     for(int i=0;i<32;i++){
                         if (f[i].getGlobalBounds().contains(pos.x,pos.y)){
-                            std::cout<<"piece is "<<i<<pieces[i]->getname()<<std::endl;
                             isMove=true;
                             n=i;
                             dx=pos.x - f[i].getPosition().x;
@@ -147,6 +168,7 @@ Game::Game()
             if (e.type == Event::MouseButtonReleased){
                 if (e.key.code == Mouse::Left){
                     isMove=false;
+                    colorSquares();
                     Vector2f p = f[n].getPosition() + Vector2f(size/2,size/2);
                     newPos = Vector2f( size*int(p.x/size), size*int(p.y/size));
                     newPosCords.x = newPos.y/size;
@@ -155,24 +177,39 @@ Game::Game()
                     bool lMove = move(oldPosCords.y,oldPosCords.x,newPosCords.x,newPosCords.y);
                     loadPosition();
                     if(lMove){
+                        if (promo){
+                            std::thread promoTh(selectChoice,*this);
+                            promoTh.join();
+                            char c = getpchoice();
+                            Promotion(newPosCords.x,newPosCords.y,c);
+                            setpchoice('a');
+                            promo = false;
+                            loadPosition();
+                        }
                         switchTurn();
                         if (turn == 0){
                             int wkx = pieces[4]->getx();
                             int wky = pieces[4]->gety();
                             if (king_in_check(wkx,wky)){
+                                check_overlay.setPosition(wky*size -1,wkx*size-1);
+                                check_overlay.move(offset);
                                 sc.play();
                             }
                             else{
                                 sm.play();
+                                check_overlay.setPosition(-100,-100);
                             }
                         }
                         else{
                             int bkx = pieces[20]->getx();
                             int bky = pieces[20]->gety();
                             if (king_in_check(bkx,bky)){
+                                check_overlay.setPosition(bky*size,bkx*size);
+                                check_overlay.move(offset);
                                 sc.play();
                             }
                             else{
+                                check_overlay.setPosition(-100,-100);
                                 sm.play();
                             }
                         }
@@ -223,7 +260,6 @@ Game::Game()
                             }
                         }
                         if (ok1 == false){
-                            std::cout<<"game over"<<std::endl;
                             so.play();
                             game_over = true;
                         }
@@ -232,12 +268,62 @@ Game::Game()
             } 
             if (isMove) {
                 f[n].setPosition(pos.x-dx,pos.y-dy);
+                if(pieces[n]->getcolor() == turn){
+                    int x = pieces[n]->getx();
+                    int y = pieces[n]->gety();
+                    vector<vector<int>> t = target_Squares(x,y);
+                    if(typeid(*pieces[n]) == typeid(*pieces[8])){
+                        vector<int> square;
+                        if(turn == 0){
+                            if(Board[x-1][y] == 50){
+                                square.push_back(x-1);
+                                square.push_back(y);
+                                t.push_back(square);
+                                square.clear();
+                                if(x == 6 && Board[x-2][y] == 50){
+                                    square.push_back(x-2);
+                                    square.push_back(y);
+                                    t.push_back(square);
+                                    square.clear();
+                                }
+                            }
+                        }else{
+                            if(Board[x+1][y] == 50){
+                                square.push_back(x+1);
+                                square.push_back(y);
+                                t.push_back(square);
+                                square.clear();
+                                if(x == 1 && Board[x+2][y] == 50){
+                                    square.push_back(x+2);
+                                    square.push_back(y);
+                                    t.push_back(square);
+                                    square.clear();
+                                }
+                            }
+                        }
+                    }
+                    vector<int> pixelpos;
+                    for(int i = 0;i < t.size();i++){
+                        pixelpos.push_back(t[i][0]*size + 30);
+                        pixelpos.push_back(t[i][1]*size + 30);
+                        for(int j = 0; j < 64 ;j++){
+                            if(squares[j].getGlobalBounds().contains(pixelpos[1],pixelpos[0])){
+                                squares[j].setColor(sf::Color(99, 207, 255));
+                            }
+                        }
+                        pixelpos.clear();
+                    }
+                }
             }
         }
         if(!game_over){
             window.clear();
             window.draw(background);
-            
+            window.draw(bdd);
+            window.draw(check_overlay);
+            for(int i =0;i<64;i++){
+                window.draw(squares[i]);
+            }
             for(int i=0;i<32;i++) {
                 f[i].move(offset);
             }
@@ -254,6 +340,9 @@ Game::Game()
             }
             window.display();
         }else{
+            for(int i=0;i<32;i++) {
+                f[i].setPosition(-100,-100);
+            }
             if (turn == 0){
                 int wkx = pieces[4]->getx();
                 int wky = pieces[4]->gety();
@@ -284,9 +373,6 @@ Game::Game()
             }
         }
     }
-
-
-    /////////////////
 }
 void Game::putPiece(int ID)
 {
@@ -550,25 +636,16 @@ bool Game::king_in_check(int X, int Y)
         
     return false;
 }
-void Game::Promotion(int i, int j)
+void Game::Promotion(int i, int j, char choice)
 {
     int pid = Board[i][j];
     int X = pieces[pid]->getx();
     int Y = pieces[pid]->gety();
     int C = pieces[pid]->getcolor();
-    std::cout << " you can promote your pawn to Bishop, Knight, Rook or Queen" << std::endl;
-    char choice;
-    do
-    {
-        std::cin >> choice;
-    } while (tolower(choice) != 'b' && tolower(choice) != 'n' && tolower(choice) != 'r' && tolower(choice) != 'q');
-    if (turn == 0)
-    {
-        choice = tolower(choice);
-    }
-    else
-    {
-        choice = toupper(choice);
+    if (turn == 1){
+        choice == toupper(choice);
+    }else{
+        choice == tolower(choice);
     }
     switch (tolower(choice))
     {
@@ -589,7 +666,6 @@ void Game::Promotion(int i, int j)
         putPiece(pid);
         break;
     default:
-        std::cout << "you picked the wrong piece!";
         break;
     }
 }
@@ -732,61 +808,6 @@ bool Game::castle(int i, int j)
     }
     return wrong_move;
 }
-bool Game ::verify_move(string move)
-{
-    vector<char> squares_c = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-    vector<char> squares_n = {'1', '2', '3', '4', '5', '6', '7', '8'};
-    vector<char>::iterator it;
-    if (move.size() == 2)
-    {
-        it = find(squares_c.begin(), squares_c.end(), move[0]);
-        if (it != squares_c.end())
-        {
-            it = find(squares_n.begin(), squares_n.end(), move[1]);
-            if (it != squares_n.end())
-            {
-                return true;
-            }
-
-            else
-            {
-                std::cout << "verify line entrence" << std::endl
-                     << move[1] << "line doesn't exist" << std::endl;
-                return false;
-            }
-        }
-        else
-        {
-            std::cout << "verify column entrence " << std::endl
-                << move[0] << "column doesn't exsist" << std::endl;
-            return false;
-        }
-    }
-
-    else
-    {
-        std::cout << "enter the correct position" << std::endl;
-        return false;
-    }
-}
-vector<int> Game::translate_move(string move)
-{
-    vector<char> squares_c = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-    vector<char> squares_n = {'1', '2', '3', '4', '5', '6', '7', '8'};
-
-
-    int j=0;
-    while(move[0]!=squares_c[j]) {
-        j++;
-    }
-    int i=0;
-    while (move[1]!=squares_n[i]){
-        i++;
-    }
-    i = 7 - i;
-    vector<int> square = {i, j};
-    return square;
-}
 bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
 {
     bool I_moved = false;
@@ -813,7 +834,6 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                     abstractMove(x1, y1, i, j);
                     if (king_in_check(bkx, bky))
                     {
-                        std::cout << "Black king is in check" << std::endl;
                         abstractMove(i, j, x1, y1);
                         wrong_move = true;
                         setpmoved(p_moved_value);
@@ -840,7 +860,6 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                         Board[i - 1][j] = 50;
                         if (king_in_check(bkx, bky))
                         {
-                            std::cout << "Black's king is in check" << std::endl;
                             abstractMove(i, j, x1, y1);
                             Board[i - 1][j] = id2;
                             wrong_move=true;
@@ -866,7 +885,6 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                     abstractMove(x1, y1, i, j);
                     if (king_in_check(bkx, bky))
                     {
-                        std::cout << "Black's king is in check" << std::endl;
                         abstractMove(i, j, x1, y1);
                         Board[i][j] = p;
                         wrong_move = true;
@@ -887,7 +905,7 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
             }
             if (I_moved && i == 7){
                 if (test==false) {
-                    Promotion(i, j);
+                    promo = true;
                 }
             }
         }
@@ -916,7 +934,6 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                     abstractMove(x1, y1, i, j);
                     if (king_in_check(wkx, wky))
                     {
-                        std::cout << "White's king is in check" << std::endl;
                         abstractMove(i, j, x1, y1);
                         wrong_move = true;
                         setpmoved(p_moved_value);
@@ -946,7 +963,6 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                         Board[i + 1][j] = 50;
                         if (king_in_check(wkx, wky))
                         {
-                            std::cout << "white's king is in check" << std::endl;
                             abstractMove(i, j, x1, y1);
                             Board[i + 1][j] = id2;
                             wrong_move = true;
@@ -973,7 +989,6 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                     abstractMove(x1, y1, i, j);
                     if (king_in_check(wkx, wky))
                     {
-                        std::cout << "White's king is in check" << std::endl;
                         abstractMove(i, j, x1, y1);
                         Board[i][j] = p;
                         wrong_move = true;
@@ -997,7 +1012,7 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
             }
             if (I_moved && i == 0){
                if (test ==false){
-                    Promotion(i, j);
+                    promo = true;
                 }
             }
         }
@@ -1016,44 +1031,6 @@ void Game::switchTurn(){
         turn = 0;
     }
 }
-vector<int> Game::input_move(){
-    string move_i;
-    string move_f;
-    vector<int> m;
-    if (turn == 0)
-    {
-        std::cout << "White's turn to play" << std::endl;
-    }
-    else
-    {
-        std::cout << "black's Turn to play" << std::endl;
-    }
-    do
-    {
-        std::cout << "enter piece's initial square" << std::endl;
-        std::cin >> move_i;
-    }
-    while (verify_move(move_i) == false);
-    do
-    {
-        std::cout << "enter piece's direction square" << std::endl;
-        std::cin >> move_f;
-    }
-    while (verify_move(move_f) == false);
-
-
-    vector<int> square_i;
-    vector<int> square_f;
-
-    
-    square_i = translate_move(move_i);
-    square_f = translate_move(move_f);
-    m.push_back(square_i[0]);
-    m.push_back(square_i[1]);
-    m.push_back(square_f[0]);
-    m.push_back(square_f[1]);
-    return m ;
-}
 bool Game:: move (int x1, int y1, int i, int j){
     int id1 = Board[x1][y1];
 
@@ -1065,7 +1042,6 @@ bool Game:: move (int x1, int y1, int i, int j){
     //(x1,y1) piece's initial square ; (i,j) piece's final square according to the Board notations
     if (id1 == 50)
     {
-        std::cout << "The initial square is empty" << std::endl;
         wrong_move = true;
     }
     else if(x1 == i && y1 == j){
@@ -1105,9 +1081,6 @@ bool Game:: move (int x1, int y1, int i, int j){
                         }
                         if (king_in_check(bkx, bky))
                         {
-                            if(test == false){
-                                std::cout << "Black king is in check here" << std::endl;
-                            }
                             abstractMove(i, j, x1, y1);
                             Board[i][j] = p;
                             wrong_move = true;
@@ -1131,9 +1104,6 @@ bool Game:: move (int x1, int y1, int i, int j){
                         }
                         if (king_in_check(wkx, wky))
                         {
-                            if(test == false){
-                                std::cout << "white king is in check here" << std::endl;
-                            }
                             abstractMove(i, j, x1, y1);
                             Board[i][j] = p;
                             wrong_move = true;
@@ -1156,7 +1126,6 @@ bool Game:: move (int x1, int y1, int i, int j){
             }
             else
             {
-                std::cout << "you picked the enemey piece as the initial square" << std::endl;
                 wrong_move = true;
             }
         }
@@ -1224,5 +1193,71 @@ void Game::loadPosition(){
         if(ids[i]>0){
             f[i].setPosition(-100,-100);
         }
+    }
+}
+void Game::colorSquares(){
+    int k = 0;
+    for(int i = 0;i <8;i++){
+        for(int j = 0;j<8;j++){
+            if((i+j)%2 == 0){
+                squares[k].setColor(sf::Color(255, 255, 255));
+            }
+            if((i+j)%2 == 1){
+                squares[k].setColor(sf::Color(3, 152, 158));
+            }
+            k++;
+        }
+    }
+}
+void selectChoice(Game g){
+    int size = 56;
+    RenderWindow promowin(VideoMode(224, 56), "Promotion");
+    Texture tc;
+    tc.loadFromFile("images/figures.png");
+    Sprite choices[4];
+    for(int i = 0; i < 4; i++){
+        choices[i].setTexture(tc);
+        choices[i].setTextureRect(IntRect(size*i,size*1,size,size));
+        choices[i].setPosition(size*i,0);
+    }
+    while (promowin.isOpen()){
+        Vector2i mpos = Mouse::getPosition(promowin);
+        Event e;
+        while (promowin.pollEvent(e)){
+            if (e.type == Event::Closed){
+                promowin.close();
+            }
+            if (e.type == Event::MouseButtonPressed){
+                if (e.key.code == Mouse::Left){
+                    for(int i=0;i<4;i++){
+                        if (choices[i].getGlobalBounds().contains(mpos.x,mpos.y)){
+                            switch (i){
+                                case 0:
+                                    g.setpchoice('r');
+                                    break;
+                                case 1:
+                                    g.setpchoice('n');
+                                    break;
+                                case 2:
+                                    g.setpchoice('b');
+                                    break;
+                                case 3:
+                                    g.setpchoice('q');
+
+                                    break;
+                                default:
+                                    break;
+                            }
+                            promowin.close();
+                        }
+                    }
+                }
+            }
+        }
+        promowin.clear();
+        for(int i = 0;i<4;i++){
+            promowin.draw(choices[i]);
+        }
+        promowin.display();
     }
 }
