@@ -48,7 +48,8 @@ private:
     int p_moved=100;
     bool test;
     bool game_over = false;
-    Color dark_square_color = Color(3, 152, 158); ///square color///
+    ///square color///
+    Color dark_square_color = Color(3, 152, 158); 
     Color light_square_color = Color(255, 255, 255);
 public:
     Game();

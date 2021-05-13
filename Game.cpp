@@ -1278,15 +1278,15 @@ void selectChoice(Game g){
                 if (choices[i].getGlobalBounds().contains(mpos.x,mpos.y)){
                     hover[i].setColor(sf::Color(36, 186, 255,70));
                 }else{
-                    hover[i].setColor(sf::Color(255, 255, 255));
+                    hover[i].setColor(light_square_color);
                 }
             } 
         }
         promowin.clear();
         promowin.draw(background);
         for(int i = 0;i<4;i++){
-            promowin.draw(choices[i]);
             promowin.draw(hover[i]);
+            promowin.draw(choices[i]); 
         }
         promowin.display();
     }
