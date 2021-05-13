@@ -19,7 +19,7 @@
 #include <string>
 #include <algorithm>
 #include <thread>
-#include<fstream>
+#include <fstream>
 
 using namespace sf;
 
@@ -27,9 +27,11 @@ class Game
 {
 
 private:
+    King *testk = new King(100, 100, 100, 100, 'k');
+    Pawn *testp = new Pawn(100, 100, 100, 100, 'p');
     int size = 56;
-    Sprite squares[64];
-    Sprite f[32];
+    Sprite squares[64];///squares///
+    Sprite f[32];///pieces///
     int turn=0;
     int Board[8][8] = {
         16,17,18,19,20,21,22,23,
@@ -46,17 +48,19 @@ private:
     int p_moved=100;
     bool test;
     bool game_over = false;
+    Color dark_square_color = Color(3, 152, 158); ///square color///
+    Color light_square_color = Color(255, 255, 255);
 public:
     Game();
     void loadTexture(int);
     void loadPosition();
+    int getTurn(){return turn;}
     vector<vector<int>> target_Squares(int, int);
     vector<vector<int>> target_Pieces(int, int);
     vector<vector<int>> global_Targets_List();
     vector<vector<int>> white_Targets_Squares();
     vector<vector<int>> black_Targets_Squares();
     void putPiece(int);
-    void initiateBoard();
     void abstractMove(int, int, int, int);
     void showBoard();
     void Promotion(int , int ,char );
