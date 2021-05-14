@@ -1,8 +1,6 @@
 #include "Bishop.h"
 #include <cmath>
 
-
-
 Bishop::Bishop(int X, int Y, int C, int ID, char N){
     x = X;
     y = Y;

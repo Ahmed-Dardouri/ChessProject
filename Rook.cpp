@@ -1,7 +1,5 @@
 #include "Rook.h"
 #include <cmath>
-#include "Piece.h"
-
 Rook::Rook(int X, int Y, int C, int ID,char N){
     x = X;
     y = Y;

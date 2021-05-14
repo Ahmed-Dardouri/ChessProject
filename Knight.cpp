@@ -1,7 +1,5 @@
 #include "Knight.h"
 #include <cmath>
-#include "Piece.h"
-
 Knight::Knight(int X, int Y, int C, int ID ,char N ){
     x = X;
     y = Y;

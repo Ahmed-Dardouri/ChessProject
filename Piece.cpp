@@ -1,7 +1,6 @@
 #include <cmath>
 #include "Piece.h"
 
-
 Piece::Piece(){
     int x,y,color,id ,name;
 }

@@ -1,6 +1,5 @@
 #include "Queen.h"
 #include <cmath>
-#include "Piece.h"
 
 
 Queen::Queen(int X, int Y, int C, int ID,char N){
