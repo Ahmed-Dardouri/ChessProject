@@ -34,7 +34,7 @@ Game::Game()
     Pawn *bpf = new Pawn(1, 5, 1, 29, 'W');
     Pawn *bpg = new Pawn(1, 6, 1, 30, 'W');
     Pawn *bph = new Pawn(1, 7, 1, 31, 'W');
-
+    std::cout<<"newww"<<std::endl;
     pieces.push_back(wra);
     pieces.push_back(wnb);
     pieces.push_back(wbc);
@@ -322,6 +322,7 @@ Game::Game()
             ////drag////
             if (isMove) {
                 f[n].setPosition(pos.x-dx,pos.y-dy);
+                
 
                 ////target square highlight////
                 if(pieces[n]->getcolor() == turn){
@@ -385,6 +386,7 @@ Game::Game()
             for(int i=0;i<32;i++) { //pieces add offset
                 f[i].move(offset);
             }
+            
             for(int i=0;i<8;i++) { //pieces
                 for(int j = 0;j<8;j++){
                     int pid = Board[i][j];
@@ -393,6 +395,7 @@ Game::Game()
                     }
                 }
             } 
+            window.draw(f[n]);// draws dragged piece over other pieces
             for(int i=0;i<32;i++) { //pieces remove offset
                 f[i].move(-offset);
             }

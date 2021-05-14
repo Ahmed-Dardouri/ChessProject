@@ -1,34 +1,22 @@
+CXX = g++
+
 LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lpthread
 
-game: Bishop.o Game.o King.o Knight.o main.o Pawn.o Piece.o Queen.o Rook.o
-	g++ *.o -o game -L /usr/include/SFML/lib $(LIBS)
+TARGET = game
 
-main.o: main.cpp
-	g++ -c main.cpp
+OBJS = Bishop.o Game.o King.o Knight.o main.o Pawn.o Piece.o Queen.o Rook.o
 
-Game.o: Game.cpp Game.hpp 
-	g++ -c Game.cpp
+CXXFLAGS = -L
 
-Bishop.o: Bishop.cpp Bishop.hpp
-	g++ -c Bishop.cpp
+INC = /usr/include/SFML/lib
 
-King.o: King.cpp King.hpp
-	g++ -c King.cpp
+$(TARGET): $(OBJS)
+	$(CXX) $^ -o $@ $(CXXFLAGS) $(INC) $(LIBS)
 
-Knight.o: Knight.cpp Knight.hpp
-	g++ -c Knight.cpp
+%.o: %.cpp
+	$(CXX) -c $<
 
-Pawn.o: Pawn.cpp Pawn.hpp
-	g++ -c Pawn.cpp
-
-Piece.o: Piece.cpp Piece.hpp
-	g++ -c Piece.cpp
-
-Queen.o: Queen.cpp Queen.hpp
-	g++ -c Queen.cpp
-
-Rook.o: Rook.cpp Rook.hpp
-	g++ -c Rook.cpp
-
+%.o: %.cpp %.hpp 
+	$(CXX) -c $<
 clean:
-	rm *.o game
+	rm $(OBJS) $(TARGET)
