@@ -1,9 +1,11 @@
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lpthread
 
 game: Bishop.o Game.o King.o Knight.o main.o Pawn.o Piece.o Queen.o Rook.o
-	g++ *.o -o game -L /usr/include/SFML/lib -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lpthread
+	g++ *.o -o game -L /usr/include/SFML/lib $(LIBS)
 
 main.o: main.cpp
 	g++ -c main.cpp
+
 Game.o: Game.cpp Game.h 
 	g++ -c Game.cpp
 
