@@ -1,5 +1,4 @@
-#include <cmath>
-#include "Piece.h"
+#include "Piece.hpp"
 
 Piece::Piece(){
     int x,y,color,id ,name;

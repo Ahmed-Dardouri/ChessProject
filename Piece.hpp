@@ -1,6 +1,8 @@
 #ifndef PIECE_H
 #define PIECE_H
 
+#include <cmath>
+
 using namespace std;
 
 class Piece{

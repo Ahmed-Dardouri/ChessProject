@@ -1,5 +1,4 @@
-#include "King.h"
-#include <cmath>
+#include "King.hpp"
 
 King::King(int X, int Y, int C, int ID , char N){
     x = X;
