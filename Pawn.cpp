@@ -1,4 +1,3 @@
-#include "Piece.h"
 #include "Pawn.h"
 
 

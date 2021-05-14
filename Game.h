@@ -6,8 +6,6 @@
 #include <cctype>
 #include <iostream>
 #include <vector>
-#include <cmath>
-#include "Piece.h"
 #include "Knight.h"
 #include "Pawn.h"
 #include "Bishop.h"

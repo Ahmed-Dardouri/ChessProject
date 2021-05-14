@@ -176,6 +176,9 @@ Game::Game()
             ////drop////
             if (e.type == Event::MouseButtonReleased){
                 if (e.key.code == Mouse::Left){
+                    for(int i =0;i<64;i++){
+                        highlighted_squares[i] = 0;
+                    }
                     isMove=false;
                     colorSquares();
                     Vector2f p = f[n].getPosition() + Vector2f(size/2,size/2);
@@ -1296,7 +1299,7 @@ void selectChoice(Game g){
                 if (choices[i].getGlobalBounds().contains(mpos.x,mpos.y)){
                     hover[i].setColor(sf::Color(36, 186, 255,70));
                 }else{
-                    hover[i].setColor(light_square_color);
+                    hover[i].setColor(sf::Color(255,255,255));
                 }
             } 
         }
