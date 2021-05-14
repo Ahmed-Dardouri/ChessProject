@@ -1,4 +1,4 @@
-#include "Pawn.h"
+#include "Pawn.hpp"
 
 
 Pawn::Pawn(int X, int Y, int C, int ID ,char N){

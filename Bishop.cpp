@@ -1,5 +1,4 @@
-#include "Bishop.h"
-#include <cmath>
+#include "Bishop.hpp"
 
 Bishop::Bishop(int X, int Y, int C, int ID, char N){
     x = X;

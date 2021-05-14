@@ -1,6 +1,4 @@
-#include "Queen.h"
-#include <cmath>
-
+#include "Queen.hpp"
 
 Queen::Queen(int X, int Y, int C, int ID,char N){
     x = X;

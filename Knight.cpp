@@ -1,5 +1,5 @@
-#include "Knight.h"
-#include <cmath>
+#include "Knight.hpp"
+
 Knight::Knight(int X, int Y, int C, int ID ,char N ){
     x = X;
     y = Y;
