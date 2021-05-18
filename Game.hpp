@@ -65,7 +65,7 @@ public:
     void Promotion(int , int ,char );
     bool castle(int , int );
     bool king_in_check(int, int);
-    bool InBetween_pieces(int, int, int, int);
+    bool In_Between_pieces(int, int, int, int);
     bool pawn_mouvement(int, int, int, int, int);
     bool move (int,int,int,int);
     void setpmoved(int x){
