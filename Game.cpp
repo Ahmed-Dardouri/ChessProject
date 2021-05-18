@@ -34,7 +34,6 @@ Game::Game()
     Pawn *bpf = new Pawn(1, 5, 1, 29, 'W');
     Pawn *bpg = new Pawn(1, 6, 1, 30, 'W');
     Pawn *bph = new Pawn(1, 7, 1, 31, 'W');
-    std::cout<<"newww"<<std::endl;
     pieces.push_back(wra);
     pieces.push_back(wnb);
     pieces.push_back(wbc);
@@ -159,7 +158,7 @@ Game::Game()
 
             ////start drag////
             if (e.type == Event::MouseButtonPressed){ 
-                if (e.key.code == Mouse::Left){
+                if (e.key.code == Mouse::Left){ // left click
                     colorSquares();
                     for(int i=0;i<32;i++){
                         if (f[i].getGlobalBounds().contains(pos.x,pos.y)){
@@ -168,6 +167,36 @@ Game::Game()
                             dx=pos.x - f[i].getPosition().x;
                             dy=pos.y - f[i].getPosition().y;
                             oldPosCords  =  Vector2f {pieces[i]->gety(),pieces[i]->getx()};
+                        }
+                    }
+                }else if (e.key.code == Mouse::Right){ // right click
+                    if(isMove){ //undo drag
+                        isMove=false;
+                        colorSquares();
+                        loadPosition();
+                    }
+
+                    ////highlight/unhighlight square////
+                    else{
+                        int i = 0;
+                        for(int j = 0;j<8;j++){
+                            for(int k = 0;k<8;k++){
+                                if (squares[i].getGlobalBounds().contains(pos.x + offset.x,pos.y + offset.y)){
+                                    if(highlighted_squares[i] == 1){
+                                        highlighted_squares[i] = 0;
+                                        if((j+k)%2 == 0){
+                                            squares[i].setColor(light_square_color);
+                                        }else{
+                                            squares[i].setColor(dark_square_color);
+                                        }
+
+                                    }else{
+                                        squares[i].setColor(sf::Color(255, 200, 71));
+                                        highlighted_squares[i] = 1;
+                                    }
+                                }
+                                i++;
+                            }
                         }
                     }
                 }
@@ -195,7 +224,6 @@ Game::Game()
                             promoTh.join();
                             char c = getpchoice();
                             Promotion(newPosCords.x,newPosCords.y,c);
-                            showBoard();
                             setpchoice('a');
                             promo = false;
                             loadPosition();
@@ -240,27 +268,27 @@ Game::Game()
                                         vector<vector<int>> t = target_Squares(i,j);
                                         if (typeid(*pieces[pid]).name() == typeid(*testp).name()){
                                             for (int k = 0; k < t.size() && ok1 == false; k++){
-                                                if (InBetween_pieces(i,j,t[k][0],t[k][1]) == false){
+                                                if (In_Between_pieces(i,j,t[k][0],t[k][1]) == false){
                                                     ok1 = !pawn_mouvement(i, j, t[k][0], t[k][1], pid);
                                                 }
                                             }
                                             if (ok1 == false){
                                                 if (turn == 0){
-                                                    if (InBetween_pieces(i,j,i-1,j) == false){
+                                                    if (In_Between_pieces(i,j,i-1,j) == false){
                                                         ok1 = !pawn_mouvement(i,j, i-1, j, pid);
                                                     }
                                                     if(i == 6 && ok1 == false){
-                                                        if (InBetween_pieces(i,j,i-2,j) == false){
+                                                        if (In_Between_pieces(i,j,i-2,j) == false){
                                                             ok1 = !pawn_mouvement(i,j, i-2, j, pid);
                                                         }
                                                     }
                                                 }
                                                 else{
-                                                    if (InBetween_pieces(i,j,i+1,j) == false){
+                                                    if (In_Between_pieces(i,j,i+1,j) == false){
                                                         ok1 = !pawn_mouvement(i,j, i+1, j, pid);
                                                     }
                                                     if(i == 1 && ok1 == false){
-                                                        if (InBetween_pieces(i,j,i+2,j) == false){
+                                                        if (In_Between_pieces(i,j,i+2,j) == false){
                                                             ok1 = !pawn_mouvement(i,j, i+2, j, pid);
                                                         }
                                                     }
@@ -284,46 +312,10 @@ Game::Game()
                 }
             }
 
-            ////left click////
-            if (e.type == Event::MouseButtonPressed){ 
-                if (e.key.code == Mouse::Right){
-                    if(isMove){ //undo drag
-                        isMove=false;
-                        colorSquares();
-                        loadPosition();
-                    }
-
-                    ////highlight/unhighlight square////
-                    else{ 
-                        int i = 0;
-                        for(int j = 0;j<8;j++){
-                            for(int k = 0;k<8;k++){
-                                if (squares[i].getGlobalBounds().contains(pos.x + offset.x,pos.y + offset.y)){
-                                    if(highlighted_squares[i] == 1){
-                                        highlighted_squares[i] = 0;
-                                        if((j+k)%2 == 0){
-                                            squares[i].setColor(light_square_color);
-                                        }else{
-                                            squares[i].setColor(dark_square_color);
-                                        }
-
-                                    }else{
-                                        squares[i].setColor(sf::Color(255, 200, 71));
-                                        highlighted_squares[i] = 1;
-                                    }
-                                }
-                                i++;
-                            }
-                        }
-                    }
-                }
-            } 
-
             ////drag////
             if (isMove) {
                 f[n].setPosition(pos.x-dx,pos.y-dy);
                 
-
                 ////target square highlight////
                 if(pieces[n]->getcolor() == turn){
                     int x = pieces[n]->getx();
@@ -407,12 +399,12 @@ Game::Game()
             if (turn == 0){
                 int wkx = pieces[4]->getx();
                 int wky = pieces[4]->gety();
-                if (king_in_check(wkx,wky)){
+                if (king_in_check(wkx,wky)){ //black wins
                     window.clear();
                     window.draw(bwinbg);
                     window.display();
                 }
-                else{
+                else{ //stalemate
                     window.clear();
                     window.draw(sbg);
                     window.display();
@@ -421,12 +413,12 @@ Game::Game()
             else{
                 int bkx = pieces[20]->getx();
                 int bky = pieces[20]->gety();
-                if (king_in_check(bkx,bky)){
+                if (king_in_check(bkx,bky)){ // white wins
                     window.clear();
                     window.draw(wwinbg);
                     window.display();
                 }
-                else{
+                else{ // stalemate
                     window.clear();
                     window.draw(sbg);
                     window.display();
@@ -477,15 +469,15 @@ void Game::showBoard() //for testing
          << 'a' << setw(4) << 'b' << setw(4) << 'c' << setw(4) << 'd' << setw(4) << 'e' << setw(4) << 'f' << setw(4) << 'g' << setw(4) << 'h';
     std::cout << std::endl;
 }
-bool Game::InBetween_pieces(int x1, int y1, int x2, int y2)
+bool Game::In_Between_pieces(int x1, int y1, int x2, int y2)
 {
-    if(x1>=0 && x1<8 && x2>=0 && x2<8 && y1>=0 && y1<8 && y2>=0 && y2<8){
+    if(x1>=0 && x1<8 && x2>=0 && x2<8 && y1>=0 && y1<8 && y2>=0 && y2<8){ // coordinates in the board
         int pid = Board[x1][y1];
         if (pid < 32)
         {
             int c = pieces[pid]->getcolor();
             int c1 = 2;
-            if (x1 == x2 && y1 == y2)
+            if (x1 == x2 && y1 == y2) // same square
             {
                 return false;
             }
@@ -493,11 +485,11 @@ bool Game::InBetween_pieces(int x1, int y1, int x2, int y2)
             {
                 c1 = pieces[Board[x2][y2]]->getcolor();
             }
-            if (c == c1)
+            if (c == c1) // last square contains ally piece
             {
-                return true;
+                return true; 
             }
-            if (x1 == x2)
+            if (x1 == x2) // horizontal 
             {
                 int j = (y2 - y1) / abs(y1 - y2);
                 for (int i = y1 + j; abs(i - y2) > 0; i += j)
@@ -508,7 +500,7 @@ bool Game::InBetween_pieces(int x1, int y1, int x2, int y2)
                     }
                 }
             }
-            else if (y1 == y2)
+            else if (y1 == y2) // vertical
             {
                 int j = (x2 - x1) / abs(x1 - x2);
                 for (int i = x1 + j; abs(i - x2) > 0; i += j)
@@ -519,7 +511,7 @@ bool Game::InBetween_pieces(int x1, int y1, int x2, int y2)
                     }
                 }
             }
-            else if (abs(x1 - x2) == abs(y1 - y2))
+            else if (abs(x1 - x2) == abs(y1 - y2)) //diagonal
             {
                 int k = (x2 - x1) / abs(x1 - x2);
                 int l = (y2 - y1) / abs(y1 - y2);
@@ -535,7 +527,7 @@ bool Game::InBetween_pieces(int x1, int y1, int x2, int y2)
             }
         }
     }
-    return false;
+    return false; // default return false
 }
 vector<vector<int>> Game::target_Squares(int X1, int Y1)
 {
@@ -543,12 +535,11 @@ vector<vector<int>> Game::target_Squares(int X1, int Y1)
     vector<int> square;
     int pid = Board[X1][Y1];
     if (pid < 32){
-        if (typeid(*pieces[pid]).name() != typeid(*testp).name()){
-            
+        if (typeid(*pieces[pid]).name() != typeid(*testp).name()){ // piece is not a pawn
             for (int i = 0; i < 8; i++){
                 for (int j = 0; j < 8; j++){
                     if (i != X1 || j != Y1){
-                        if (InBetween_pieces(X1, Y1, i, j) == 0){
+                        if (In_Between_pieces(X1, Y1, i, j) == 0){
                             if (pieces[pid]->legal_move(i, j)){
                                 square.push_back(i);
                                 square.push_back(j);
@@ -560,10 +551,10 @@ vector<vector<int>> Game::target_Squares(int X1, int Y1)
                 }
             }
         }
-        else{
-            if (pieces[pid]->getcolor() == 0){
+        else{ // case of pawn
+            if (pieces[pid]->getcolor() == 0){ // white pawn
                 if (Y1 < 7){
-                    int rid = Board[X1 - 1][Y1 + 1];
+                    int rid = Board[X1 - 1][Y1 + 1]; // right square
                     if (!(rid < 32 && pieces[rid]->getcolor() == pieces[pid]->getcolor())){
                         square.push_back(X1 - 1);
                         square.push_back(Y1 + 1);
@@ -571,7 +562,7 @@ vector<vector<int>> Game::target_Squares(int X1, int Y1)
                         square.clear();
                     }
                 }
-                if (Y1 > 0){
+                if (Y1 > 0){ // left square
                     int lid = Board[X1 - 1][Y1 - 1];
                     if (!(lid < 32 && pieces[lid]->getcolor() == pieces[pid]->getcolor())){
                         square.push_back(X1 - 1);
@@ -581,8 +572,8 @@ vector<vector<int>> Game::target_Squares(int X1, int Y1)
                     }
                 }
             }
-            else{
-                if (Y1 < 7){
+            else{ // black pawn
+                if (Y1 < 7){ // right square
                     int rid = Board[X1 + 1][Y1 + 1];
                     if (!(rid < 32 && pieces[rid]->getcolor() == pieces[pid]->getcolor())){
                         square.push_back(X1 + 1);
@@ -591,11 +582,9 @@ vector<vector<int>> Game::target_Squares(int X1, int Y1)
                         square.clear();
                     }
                 }
-                if (Y1 > 0)
-                {
+                if (Y1 > 0){ // left square
                     int lid = Board[X1 + 1][Y1 - 1];
-                    if (!(lid < 32 && pieces[lid]->getcolor() == pieces[pid]->getcolor()))
-                    {
+                    if (!(lid < 32 && pieces[lid]->getcolor() == pieces[pid]->getcolor())){
                         square.push_back(X1 + 1);
                         square.push_back(Y1 - 1);
                         squaresList.push_back(square);
@@ -615,7 +604,7 @@ vector<vector<int>> Game::white_Targets_Squares()
     {
         for (int j = 0; j < 8; j++)
         {
-            if (Board[i][j] < 16)
+            if (Board[i][j] < 16) //the piece is white
             {
                 s = target_Squares(i, j);
                 for (int k = 0; k < s.size(); k++)
@@ -636,7 +625,7 @@ vector<vector<int>> Game::black_Targets_Squares()
     {
         for (int j = 0; j < 8; j++)
         {
-            if (Board[i][j] > 15 && Board[i][j] != 50)
+            if (Board[i][j] > 15 && Board[i][j] != 50) // the piece is black
             {
                 s = target_Squares(i, j);
                 for (int k = 0; k < s.size(); k++)
@@ -651,7 +640,7 @@ vector<vector<int>> Game::black_Targets_Squares()
 }
 bool Game::king_in_check(int X, int Y)
 {
-    vector<vector<int>> ts;
+    vector<vector<int>> ts; // opponent target squares
     if (turn == 1)
     {
         ts = white_Targets_Squares();
@@ -663,7 +652,7 @@ bool Game::king_in_check(int X, int Y)
     vector<int> kingPos = {X, Y};
 
     for (int i = 0; i < ts.size(); i++){
-        if (ts[i] == kingPos){
+        if (ts[i] == kingPos){ // king square in target squares of opponent
             return true;
         }
     }
@@ -676,10 +665,9 @@ void Game::Promotion(int i, int j, char choice)
     int Y = pieces[pid]->gety();
     int C = pieces[pid]->getcolor();
     if (turn == 1){
-        choice = toupper(choice);
-
+        choice = toupper(choice); // black pawn
     }else{
-        choice = tolower(choice);
+        choice = tolower(choice); // white pawn
     }
     switch (tolower(choice))
     {
@@ -712,12 +700,12 @@ bool Game::castle(int i, int j)
         bts = black_Targets_Squares();
         int x1 = pieces[4]->getx();
         int y1 = pieces[4]->gety();
-        if (Board[i][j] == 0)
+        if (Board[i][j] == 0) //left rook
         {
-            if ((InBetween_pieces(x1, y1, x1, y1 - 3) == false) && (Board[7][1] = 50) && (pieces[4]->gethm() == false) && (pieces[0]->gethm() == false))
+            if ((In_Between_pieces(x1, y1, x1, y1 - 3) == false) && (Board[7][1] = 50) && (pieces[4]->gethm() == false) && (pieces[0]->gethm() == false))
             {
                 bool trouve = false;
-                for (int k = 0; k < bts.size() && trouve == true; k++)
+                for (int k = 0; k < bts.size() && trouve == false; k++)
                 {
                     if (bts[k][0] == 7 && (bts[k][1] == 2 || bts[k][1] == 3 || bts[k][1] == 4))
                     {
@@ -742,12 +730,12 @@ bool Game::castle(int i, int j)
                 wrong_move = true;
             }
         }
-        else if (Board[i][j] == 7)
+        else if (Board[i][j] == 7) // right rook
         {
-            if ((InBetween_pieces(x1, y1, x1, y1 + 2) == false) && (Board[7][6] = 50) && (pieces[4]->gethm() == false) && (pieces[7]->gethm() == false))
+            if ((In_Between_pieces(x1, y1, x1, y1 + 2) == false) && (Board[7][6] = 50) && (pieces[4]->gethm() == false) && (pieces[7]->gethm() == false))
             {
                 bool trouve = false;
-                for (int k = 0; k < bts.size() && trouve == true; k++)
+                for (int k = 0; k < bts.size() && trouve == false; k++)
                 {
                     if (bts[k][0] == 7 && (bts[k][1] == 5 || bts[k][1] == 6 || bts[k][1] == 4))
                     {
@@ -782,12 +770,12 @@ bool Game::castle(int i, int j)
         wts = white_Targets_Squares();
         int x1 = pieces[20]->getx();
         int y1 = pieces[20]->gety();
-        if (Board[i][j] == 16)
+        if (Board[i][j] == 16) // left rook
         {
-            if ((InBetween_pieces(x1, y1, x1, y1 - 3) == false) && (Board[0][1] = 50) && (pieces[20]->gethm() == false) && (pieces[16]->gethm() == false))
+            if ((In_Between_pieces(x1, y1, x1, y1 - 3) == false) && (Board[0][1] = 50) && (pieces[20]->gethm() == false) && (pieces[16]->gethm() == false))
             {
                 bool trouve = false;
-                for (int k = 0; k < wts.size() && trouve == true; k++)
+                for (int k = 0; k < wts.size() && trouve == false; k++)
                 {
                     if (wts[k][0] == 0 && (wts[k][1] == 2 || wts[k][1] == 3 || wts[k][1] == 4))
                     {
@@ -809,12 +797,12 @@ bool Game::castle(int i, int j)
                 wrong_move = true;
             }
         }
-        else if (Board[i][j] == 23)
+        else if (Board[i][j] == 23) //right rook
         {
-            if ((InBetween_pieces(x1, y1, x1, y1 + 2) == false) && (Board[0][6] = 50) && (pieces[20]->gethm() == false) && (pieces[23]->gethm() == false))
+            if ((In_Between_pieces(x1, y1, x1, y1 + 2) == false) && (Board[0][6] = 50) && (pieces[20]->gethm() == false) && (pieces[23]->gethm() == false))
             {
                 bool trouve = false;
-                for (int k = 0; k < wts.size() && trouve == true; k++)
+                for (int k = 0; k < wts.size() && trouve == false; k++)
                 {
                     if (wts[k][0] == 0 && (wts[k][1] == 5 || wts[k][1] == 6 || wts[k][1] == 4))
                     {
@@ -1073,93 +1061,69 @@ bool Game:: move (int x1, int y1, int i, int j){
     int bkx = pieces[20]->getx();
     int bky = pieces[20]->gety();
     bool wrong_move = false;
-    //(x1,y1) piece's initial square ; (i,j) piece's final square according to the Board notations
-    if (id1 == 50)
-    {
+    if (id1 == 50){ // initial square is empty
         wrong_move = true;
     }
-    else if(x1 == i && y1 == j){
+    else if(x1 == i && y1 == j){ // same square selected
         wrong_move = true;
     }
     else {
-        if (typeid(*pieces[id1]).name() == typeid(*testp).name())
-        {
-            if (InBetween_pieces(x1,y1,i,j) == false){
+        if (typeid(*pieces[id1]).name() == typeid(*testp).name()){ // pawn selected
+            if (In_Between_pieces(x1,y1,i,j) == false){
                 wrong_move = pawn_mouvement(x1, y1, i, j, id1);
             }
             else{
                 wrong_move == true;
             }
         }
-        else if (typeid(*pieces[id1]).name() == typeid(*testk).name() && (abs(y1 - j) == 3 || abs(y1 - j) == 4))
-        {
+        else if (typeid(*pieces[id1]).name() == typeid(*testk).name() && (abs(y1 - j) == 3 || abs(y1 - j) == 4)){ //caslte
             wrong_move = castle(i, j);
-        }
-        else
-        {
+        }else{
             vector<int> square_f = {i,j};
-            if (pieces[id1]->getcolor() == turn)
-            {
+            if (pieces[id1]->getcolor() == turn){ // selected ally piece
                 vector<vector<int>> c = target_Squares(x1, y1);
                 vector<vector<int>>::iterator it1;
                 it1 = find(c.begin(), c.end(), square_f);
-                if (it1 != c.end()){
+                if (it1 != c.end()){ // final square found in target squares
                     int p = Board[i][j];
                     abstractMove(x1, y1, i, j);
-                    if (turn == 1)
-                    {
-                        if (id1 == 20)
-                        {
+                    if (turn == 1){ // black piece
+                        if (id1 == 20){ // in case king moved
                             bkx = i;
                             bky = j;
                         }
-                        if (king_in_check(bkx, bky))
-                        {
+                        if (king_in_check(bkx, bky)){ // revert the change if the king is in check after the mvt
                             abstractMove(i, j, x1, y1);
                             Board[i][j] = p;
                             wrong_move = true;
-                        }
-                        else if (test==true)
-                        {
+                        }else if (test==true){ // revert the change if it was a test
                             abstractMove(i,j,x1,y1);
                             Board[i][j]=p;
-                        }
-                        else {
+                        }else{
                             pieces[id1]->sethm();
                             setpmoved(100);
                         }
-                    }
-                    else
-                    {
-                        if (id1 == 4)
-                        {
+                    }else{ // chite piece
+                        if (id1 == 4){ // in case king moved
                             wkx = i;
                             wky = j;
                         }
-                        if (king_in_check(wkx, wky))
-                        {
+                        if (king_in_check(wkx, wky)){ // revert the change if the king is in check after the mvt
                             abstractMove(i, j, x1, y1);
                             Board[i][j] = p;
                             wrong_move = true;
-                        }
-                        else if (test==true )
-                        {
+                        }else if (test==true ){ // revert the change if it was a test
                             abstractMove(i, j, x1, y1);
                             Board[i][j]=p;
-                        }
-                        else{
+                        }else{
                             pieces[id1]->sethm();
                             setpmoved(100);
                         }
                     }
-                }
-                else
-                {
+                }else{
                     wrong_move = true;
                 }
-            }
-            else
-            {
+            }else{
                 wrong_move = true;
             }
         }
@@ -1209,7 +1173,7 @@ void Game::loadTexture(int id){
             break;
     }
 }
-void Game::loadPosition(){
+void Game::loadPosition(){ // loads texture and pieces positions from board
     int ids[32] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31};
     for(int i=0;i<8;i++){
         for(int j=0;j<8;j++){
@@ -1225,11 +1189,11 @@ void Game::loadPosition(){
     }
     for (int i = 0; i <32;i++){
         if(ids[i]>0){
-            f[i].setPosition(-100,-100);
+            f[i].setPosition(-100,-100); // remove taken pieces from the board
         }
     }
 }
-void Game::colorSquares(){
+void Game::colorSquares(){ // sets board squares to normal color
     int k = 0;
     for(int i = 0;i <8;i++){
         for(int j = 0;j<8;j++){
@@ -1243,7 +1207,7 @@ void Game::colorSquares(){
         }
     }
 }
-void selectChoice(Game g){
+void selectChoice(Game g){ // promotion choice select thread
     int size = 56;
     RenderWindow promowin(VideoMode(224, 56), "Promotion");
     Vector2i winpos = {400,150};
@@ -1270,9 +1234,9 @@ void selectChoice(Game g){
         Event e;
         while (promowin.pollEvent(e)){
             if (e.type == Event::Closed){
-                promowin.close();
+                continue;
             }
-            if (e.type == Event::MouseButtonPressed){
+            if (e.type == Event::MouseButtonPressed){ // choice select
                 if (e.key.code == Mouse::Left){
                     for(int i=0;i<4;i++){
                         if (choices[i].getGlobalBounds().contains(mpos.x,mpos.y)){
@@ -1298,13 +1262,13 @@ void selectChoice(Game g){
                     }
                 }
             }
-            for(int i=0;i<4;i++){
+            for(int i=0;i<4;i++){ //mouse hover effect
                 if (choices[i].getGlobalBounds().contains(mpos.x,mpos.y)){
                     hover[i].setColor(sf::Color(36, 186, 255,70));
                 }else{
                     hover[i].setColor(sf::Color(255,255,255));
                 }
-            } 
+            }
         }
         promowin.clear();
         promowin.draw(background);
