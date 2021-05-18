@@ -429,27 +429,6 @@ void Game::abstractMove(int x1, int y1, int x2, int y2){
         pieces[pid]->sety(y2);
     }
 }
-void Game::showBoard(){ //for testing
-    std::cout << std::endl;
-
-    for (int i = 0; i < 8; i++){
-        std::cout << setw(4) << 8 - i << setw(20);
-        for (int j = 0; j < 8; j++){
-            if (Board[i][j] != 50){
-                std::cout << setw(4);
-                std::cout << pieces[Board[i][j]]->getname();
-            }else{
-                std::cout << setw(4);
-                std::cout << ".";
-            }
-        }
-        std::cout << std::endl;
-    }
-    std::cout << setw(8);
-    std::cout << std::endl
-         << 'a' << setw(4) << 'b' << setw(4) << 'c' << setw(4) << 'd' << setw(4) << 'e' << setw(4) << 'f' << setw(4) << 'g' << setw(4) << 'h';
-    std::cout << std::endl;
-}
 bool Game::In_Between_pieces(int x1, int y1, int x2, int y2){
     if(x1>=0 && x1<8 && x2>=0 && x2<8 && y1>=0 && y1<8 && y2>=0 && y2<8){ // coordinates in the board
         int pid = Board[x1][y1];

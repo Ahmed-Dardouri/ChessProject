@@ -61,7 +61,6 @@ public:
     vector<vector<int>> black_Targets_Squares();
     void putPiece(int);
     void abstractMove(int, int, int, int);
-    void showBoard();
     void Promotion(int , int ,char );
     bool castle(int , int );
     bool king_in_check(int, int);
