@@ -28,6 +28,8 @@ private:
     int p_moved=100;
     bool test;
     bool game_over = false;
+    King *testk = new King(100, 100, 100, 100, 'k');
+    Pawn *testp = new Pawn(100, 100, 100, 100, 'p');
 public:
     Game();
     vector<vector<int>> target_Squares(int, int);
@@ -42,7 +44,7 @@ public:
     void Promotion(int i, int j);
     bool castle(int i, int j);
     bool king_in_check(int, int);
-    bool InBetween_pieces(int, int, int, int);
+    bool In_Between_pieces(int, int, int, int);
     bool verify_move(string);
     vector<int> translate_move(string);
     bool pawn_mouvement(int, int, int, int, int);
