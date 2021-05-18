@@ -1,7 +1,6 @@
 #include "Game.hpp"
 
-Game::Game()
-{
+Game::Game(){
     Rook *wra = new Rook(7, 0, 0, 0, 'r');
     Knight *wnb = new Knight(7, 1, 0, 1, 'n');
     Bishop *wbc = new Bishop(7, 2, 0, 2, 'b');
@@ -134,7 +133,7 @@ Game::Game()
     }
     colorSquares(); //color dark squares
 
-    for(int i=0;i<32;i++) { //pieces
+    for(int i=0;i<32;i++){ //pieces
         f[i].setTexture(t1);
         f[i].setPosition(-100,-100);
     }
@@ -189,7 +188,6 @@ Game::Game()
                                         }else{
                                             squares[i].setColor(dark_square_color);
                                         }
-
                                     }else{
                                         squares[i].setColor(sf::Color(255, 200, 71));
                                         highlighted_squares[i] = 1;
@@ -210,13 +208,13 @@ Game::Game()
                     }
                     isMove=false;
                     colorSquares();
-                    Vector2f p = f[n].getPosition() + Vector2f(size/2,size/2);
-                    newPos = Vector2f( size*int(p.x/size), size*int(p.y/size));
+                    Vector2f p = f[n].getPosition() + Vector2f(size/2,size/2); // offset for placing pieces in center of square
+                    newPos = Vector2f( size*int(p.x/size), size*int(p.y/size)); // piece position in pixels centered in square
                     newPosCords.x = newPos.y/size;
                     newPosCords.y = newPos.x/size;
                     
-                    bool lMove = move(oldPosCords.y,oldPosCords.x,newPosCords.x,newPosCords.y);
-                    loadPosition();
+                    bool lMove = move(oldPosCords.y,oldPosCords.x,newPosCords.x,newPosCords.y); // make the move
+                    loadPosition(); // shows move result when piece is dropped
                     if(lMove){
                         ////pawn promotion////
                         if (promo){
@@ -237,21 +235,18 @@ Game::Game()
                                 check_overlay.setPosition(wky*size -1,wkx*size-1);
                                 check_overlay.move(offset);
                                 sc.play();
-                            }
-                            else{
+                            }else{
                                 sm.play();
                                 check_overlay.setPosition(-100,-100);
                             }
-                        }
-                        else{
+                        }else{
                             int bkx = pieces[20]->getx();
                             int bky = pieces[20]->gety();
                             if (king_in_check(bkx,bky)){
                                 check_overlay.setPosition(bky*size,bkx*size);
                                 check_overlay.move(offset);
                                 sc.play();
-                            }
-                            else{
+                            }else{
                                 check_overlay.setPosition(-100,-100);
                                 sm.play();
                             }
@@ -282,8 +277,7 @@ Game::Game()
                                                             ok1 = !pawn_mouvement(i,j, i-2, j, pid);
                                                         }
                                                     }
-                                                }
-                                                else{
+                                                }else{
                                                     if (In_Between_pieces(i,j,i+1,j) == false){
                                                         ok1 = !pawn_mouvement(i,j, i+1, j, pid);
                                                     }
@@ -294,8 +288,7 @@ Game::Game()
                                                     }
                                                 }
                                             }
-                                        }
-                                        else{
+                                        }else{
                                             for (int k = 0; k < t.size() && ok1 == false; k++){
                                                 ok1 = move(i,j,t[k][0],t[k][1]);
                                             }
@@ -352,8 +345,8 @@ Game::Game()
                         }
                     }
                     vector<int> pixelpos;
-                    for(int i = 0;i < t.size();i++){
-                        pixelpos.push_back(t[i][0]*size + 30);
+                    for(int i = 0;i < t.size();i++){ // highlight squares in light blue
+                        pixelpos.push_back(t[i][0]*size + 30); // +30 accounts for the 26 pixel offset
                         pixelpos.push_back(t[i][1]*size + 30);
                         for(int j = 0; j < 64 ;j++){
                             if(squares[j].getGlobalBounds().contains(pixelpos[1],pixelpos[0])){
@@ -403,22 +396,19 @@ Game::Game()
                     window.clear();
                     window.draw(bwinbg);
                     window.display();
-                }
-                else{ //stalemate
+                }else{ //stalemate
                     window.clear();
                     window.draw(sbg);
                     window.display();
                 }
-            }
-            else{
+            }else{
                 int bkx = pieces[20]->getx();
                 int bky = pieces[20]->gety();
                 if (king_in_check(bkx,bky)){ // white wins
                     window.clear();
                     window.draw(wwinbg);
                     window.display();
-                }
-                else{ // stalemate
+                }else{ // stalemate
                     window.clear();
                     window.draw(sbg);
                     window.display();
@@ -427,37 +417,28 @@ Game::Game()
         }
     }
 }
-void Game::putPiece(int ID)
-{
+void Game::putPiece(int ID){
     Board[pieces[ID]->getx()][pieces[ID]->gety()] = pieces[ID]->getid();
 }
-void Game::abstractMove(int x1, int y1, int x2, int y2)
-{
+void Game::abstractMove(int x1, int y1, int x2, int y2){
     int pid = Board[x1][y1];
-    if (pid < 32)
-    {
+    if (pid < 32){
         Board[x1][y1] = 50;
         Board[x2][y2] = pid;
         pieces[pid]->setx(x2);
         pieces[pid]->sety(y2);
     }
 }
-void Game::showBoard() //for testing
-{
+void Game::showBoard(){ //for testing
     std::cout << std::endl;
 
-    for (int i = 0; i < 8; i++)
-    {
+    for (int i = 0; i < 8; i++){
         std::cout << setw(4) << 8 - i << setw(20);
-        for (int j = 0; j < 8; j++)
-        {
-            if (Board[i][j] != 50)
-            {
+        for (int j = 0; j < 8; j++){
+            if (Board[i][j] != 50){
                 std::cout << setw(4);
                 std::cout << pieces[Board[i][j]]->getname();
-            }
-            else
-            {
+            }else{
                 std::cout << setw(4);
                 std::cout << ".";
             }
@@ -469,57 +450,41 @@ void Game::showBoard() //for testing
          << 'a' << setw(4) << 'b' << setw(4) << 'c' << setw(4) << 'd' << setw(4) << 'e' << setw(4) << 'f' << setw(4) << 'g' << setw(4) << 'h';
     std::cout << std::endl;
 }
-bool Game::In_Between_pieces(int x1, int y1, int x2, int y2)
-{
+bool Game::In_Between_pieces(int x1, int y1, int x2, int y2){
     if(x1>=0 && x1<8 && x2>=0 && x2<8 && y1>=0 && y1<8 && y2>=0 && y2<8){ // coordinates in the board
         int pid = Board[x1][y1];
-        if (pid < 32)
-        {
+        if (pid < 32){
             int c = pieces[pid]->getcolor();
             int c1 = 2;
-            if (x1 == x2 && y1 == y2) // same square
-            {
+            if (x1 == x2 && y1 == y2){ // same square
                 return false;
             }
-            if (Board[x2][y2] < 32)
-            {
+            if (Board[x2][y2] < 32){
                 c1 = pieces[Board[x2][y2]]->getcolor();
             }
-            if (c == c1) // last square contains ally piece
-            {
+            if (c == c1){ // last square contains ally piece
                 return true; 
             }
-            if (x1 == x2) // horizontal 
-            {
+            if (x1 == x2){ // horizontal
                 int j = (y2 - y1) / abs(y1 - y2);
-                for (int i = y1 + j; abs(i - y2) > 0; i += j)
-                {
-                    if (Board[x1][i] < 32)
-                    {
+                for (int i = y1 + j; abs(i - y2) > 0; i += j){
+                    if (Board[x1][i] < 32){
                         return true;
                     }
                 }
-            }
-            else if (y1 == y2) // vertical
-            {
+            }else if (y1 == y2){ // vertical
                 int j = (x2 - x1) / abs(x1 - x2);
-                for (int i = x1 + j; abs(i - x2) > 0; i += j)
-                {
-                    if (Board[i][y1] < 32)
-                    {
+                for (int i = x1 + j; abs(i - x2) > 0; i += j){
+                    if (Board[i][y1] < 32){
                         return true;
                     }
                 }
-            }
-            else if (abs(x1 - x2) == abs(y1 - y2)) //diagonal
-            {
+            }else if (abs(x1 - x2) == abs(y1 - y2)){ //diagonal
                 int k = (x2 - x1) / abs(x1 - x2);
                 int l = (y2 - y1) / abs(y1 - y2);
                 int j = y1 + l;
-                for (int i = x1 + k; abs(i - x2) > 0; i += k)
-                {
-                    if (Board[i][j] < 32)
-                    {
+                for (int i = x1 + k; abs(i - x2) > 0; i += k){
+                    if (Board[i][j] < 32){
                         return true;
                     }
                     j += l;
@@ -529,8 +494,7 @@ bool Game::In_Between_pieces(int x1, int y1, int x2, int y2)
     }
     return false; // default return false
 }
-vector<vector<int>> Game::target_Squares(int X1, int Y1)
-{
+vector<vector<int>> Game::target_Squares(int X1, int Y1){
     vector<vector<int>> squaresList;
     vector<int> square;
     int pid = Board[X1][Y1];
@@ -550,8 +514,7 @@ vector<vector<int>> Game::target_Squares(int X1, int Y1)
                     }
                 }
             }
-        }
-        else{ // case of pawn
+        }else{ // case of pawn
             if (pieces[pid]->getcolor() == 0){ // white pawn
                 if (Y1 < 7){
                     int rid = Board[X1 - 1][Y1 + 1]; // right square
@@ -571,8 +534,7 @@ vector<vector<int>> Game::target_Squares(int X1, int Y1)
                         square.clear();
                     }
                 }
-            }
-            else{ // black pawn
+            }else{ // black pawn
                 if (Y1 < 7){ // right square
                     int rid = Board[X1 + 1][Y1 + 1];
                     if (!(rid < 32 && pieces[rid]->getcolor() == pieces[pid]->getcolor())){
@@ -596,19 +558,14 @@ vector<vector<int>> Game::target_Squares(int X1, int Y1)
     }
     return squaresList;
 }
-vector<vector<int>> Game::white_Targets_Squares()
-{
+vector<vector<int>> Game::white_Targets_Squares(){
     vector<vector<int>> wts;
     vector<vector<int>> s;
-    for (int i = 0; i < 8; i++)
-    {
-        for (int j = 0; j < 8; j++)
-        {
-            if (Board[i][j] < 16) //the piece is white
-            {
+    for (int i = 0; i < 8; i++){
+        for (int j = 0; j < 8; j++){
+            if (Board[i][j] < 16){ //the piece is white
                 s = target_Squares(i, j);
-                for (int k = 0; k < s.size(); k++)
-                {
+                for (int k = 0; k < s.size(); k++){
                     wts.push_back(s[k]);
                 }
                 s.clear();
@@ -617,19 +574,14 @@ vector<vector<int>> Game::white_Targets_Squares()
     }
     return wts;
 }
-vector<vector<int>> Game::black_Targets_Squares()
-{
+vector<vector<int>> Game::black_Targets_Squares(){
     vector<vector<int>> bts;
     vector<vector<int>> s;
-    for (int i = 0; i < 8; i++)
-    {
-        for (int j = 0; j < 8; j++)
-        {
-            if (Board[i][j] > 15 && Board[i][j] != 50) // the piece is black
-            {
+    for (int i = 0; i < 8; i++){
+        for (int j = 0; j < 8; j++){
+            if (Board[i][j] > 15 && Board[i][j] != 50){ // the piece is black
                 s = target_Squares(i, j);
-                for (int k = 0; k < s.size(); k++)
-                {
+                for (int k = 0; k < s.size(); k++){
                     bts.push_back(s[k]);
                 }
                 s.clear();
@@ -638,15 +590,11 @@ vector<vector<int>> Game::black_Targets_Squares()
     }
     return bts;
 }
-bool Game::king_in_check(int X, int Y)
-{
+bool Game::king_in_check(int X, int Y){
     vector<vector<int>> ts; // opponent target squares
-    if (turn == 1)
-    {
+    if (turn == 1){
         ts = white_Targets_Squares();
-    }
-    else
-    {
+    }else{
         ts = black_Targets_Squares();
     }
     vector<int> kingPos = {X, Y};
@@ -658,19 +606,17 @@ bool Game::king_in_check(int X, int Y)
     }
     return false;
 }
-void Game::Promotion(int i, int j, char choice)
-{
+void Game::Promotion(int i, int j, char choice){
     int pid = Board[i][j];
     int X = pieces[pid]->getx();
     int Y = pieces[pid]->gety();
     int C = pieces[pid]->getcolor();
-    if (turn == 1){
-        choice = toupper(choice); // black pawn
-    }else{
-        choice = tolower(choice); // white pawn
+    if (turn == 1){ // black pawn
+        choice = toupper(choice);
+    }else{          // white pawn
+        choice = tolower(choice);
     }
-    switch (tolower(choice))
-    {
+    switch (tolower(choice)){
     case 'b':
         pieces[pid] = new Bishop(X, Y, C, pid, choice);
         putPiece(pid);
@@ -691,238 +637,176 @@ void Game::Promotion(int i, int j, char choice)
         break;
     }
 }
-bool Game::castle(int i, int j)
-{
+bool Game::castle(int i, int j){
     bool wrong_move = false;
-    if (turn == 0)
-    {
+    if (turn == 0){
         vector<vector<int>> bts;
         bts = black_Targets_Squares();
         int x1 = pieces[4]->getx();
         int y1 = pieces[4]->gety();
-        if (Board[i][j] == 0) //left rook
-        {
-            if ((In_Between_pieces(x1, y1, x1, y1 - 3) == false) && (Board[7][1] = 50) && (pieces[4]->gethm() == false) && (pieces[0]->gethm() == false))
-            {
+        if (Board[i][j] == 0){ //left rook
+            if ((In_Between_pieces(x1, y1, x1, y1 - 3) == false) && (Board[7][1] = 50) && (pieces[4]->gethm() == false) && (pieces[0]->gethm() == false)){
                 bool trouve = false;
-                for (int k = 0; k < bts.size() && trouve == false; k++)
-                {
-                    if (bts[k][0] == 7 && (bts[k][1] == 2 || bts[k][1] == 3 || bts[k][1] == 4))
-                    {
+                for (int k = 0; k < bts.size() && trouve == false; k++){
+                    if (bts[k][0] == 7 && (bts[k][1] == 2 || bts[k][1] == 3 || bts[k][1] == 4)){
                         trouve = true;
                     }
                 }
-                if (trouve == false)
-                {
-                    if (test==false) {
+                if (trouve == false){
+                    if (test==false){
                         abstractMove(7, 4, 7, 2);
                         abstractMove(7, 0, 7, 3);
                         pieces[4]->sethm();
                         pieces[0]->sethm();
                     }
-                }
-                else
-                {
+                }else{
                     wrong_move = true;
                 }
-            }
-            else{
+            }else{
                 wrong_move = true;
             }
-        }
-        else if (Board[i][j] == 7) // right rook
-        {
-            if ((In_Between_pieces(x1, y1, x1, y1 + 2) == false) && (Board[7][6] = 50) && (pieces[4]->gethm() == false) && (pieces[7]->gethm() == false))
-            {
+        }else if (Board[i][j] == 7){ // right rook
+            if ((In_Between_pieces(x1, y1, x1, y1 + 2) == false) && (Board[7][6] = 50) && (pieces[4]->gethm() == false) && (pieces[7]->gethm() == false)){
                 bool trouve = false;
-                for (int k = 0; k < bts.size() && trouve == false; k++)
-                {
-                    if (bts[k][0] == 7 && (bts[k][1] == 5 || bts[k][1] == 6 || bts[k][1] == 4))
-                    {
+                for (int k = 0; k < bts.size() && trouve == false; k++){
+                    if (bts[k][0] == 7 && (bts[k][1] == 5 || bts[k][1] == 6 || bts[k][1] == 4)){
                         trouve = true;
                     }
                 }
-                if (trouve == false)
-                {
-                     if (test==false) {
+                if (trouve == false){
+                    if (test==false){
                        abstractMove(7, 4, 7, 6);
                        abstractMove(7, 7, 7, 5);
                        pieces[4]->sethm();
                        pieces[7]->sethm();
                     }
-                }
-                else
-                {
+                }else{
                     wrong_move = true;
                 }
-            }
-            else{
+            }else{
                 wrong_move = true;
             }
-        }
-        else{
+        }else{
             wrong_move = true;
         }
-    }
-    else
-    {
+    }else{
         vector<vector<int>> wts;
         wts = white_Targets_Squares();
         int x1 = pieces[20]->getx();
         int y1 = pieces[20]->gety();
-        if (Board[i][j] == 16) // left rook
-        {
-            if ((In_Between_pieces(x1, y1, x1, y1 - 3) == false) && (Board[0][1] = 50) && (pieces[20]->gethm() == false) && (pieces[16]->gethm() == false))
-            {
+        if (Board[i][j] == 16){ // left rook
+            if ((In_Between_pieces(x1, y1, x1, y1 - 3) == false) && (Board[0][1] = 50) && (pieces[20]->gethm() == false) && (pieces[16]->gethm() == false)){
                 bool trouve = false;
-                for (int k = 0; k < wts.size() && trouve == false; k++)
-                {
-                    if (wts[k][0] == 0 && (wts[k][1] == 2 || wts[k][1] == 3 || wts[k][1] == 4))
-                    {
+                for (int k = 0; k < wts.size() && trouve == false; k++){
+                    if (wts[k][0] == 0 && (wts[k][1] == 2 || wts[k][1] == 3 || wts[k][1] == 4)){
                         trouve = true;
                     }
                 }
-                if (trouve == false)
-                {
-                    abstractMove(0, 4, 0, 2);
-                    abstractMove(0, 0, 0, 3);
-                    pieces[20]->sethm();
-                    pieces[16]->sethm();
-                }
-                else{
+                if (trouve == false){
+                    if (test==false){
+                        abstractMove(0, 4, 0, 2);
+                        abstractMove(0, 0, 0, 3);
+                        pieces[20]->sethm();
+                        pieces[16]->sethm();
+                    }
+                }else{
                     wrong_move = true;
                 }
-            }
-            else{
+            }else{
                 wrong_move = true;
             }
-        }
-        else if (Board[i][j] == 23) //right rook
-        {
-            if ((In_Between_pieces(x1, y1, x1, y1 + 2) == false) && (Board[0][6] = 50) && (pieces[20]->gethm() == false) && (pieces[23]->gethm() == false))
-            {
+        }else if (Board[i][j] == 23){ //right rook
+            if ((In_Between_pieces(x1, y1, x1, y1 + 2) == false) && (Board[0][6] = 50) && (pieces[20]->gethm() == false) && (pieces[23]->gethm() == false)){
                 bool trouve = false;
-                for (int k = 0; k < wts.size() && trouve == false; k++)
-                {
-                    if (wts[k][0] == 0 && (wts[k][1] == 5 || wts[k][1] == 6 || wts[k][1] == 4))
-                    {
+                for (int k = 0; k < wts.size() && trouve == false; k++){
+                    if (wts[k][0] == 0 && (wts[k][1] == 5 || wts[k][1] == 6 || wts[k][1] == 4)){
                         trouve = true;
                     }
                 }
-                if (trouve == false)
-                {
-                    abstractMove(0, 4, 0, 6);
-                    abstractMove(0, 7, 0, 5);
-                    pieces[20]->sethm();
-                    pieces[23]->sethm();
-                }
-                else{
+                if (trouve == false){
+                    if (test==false){
+                        abstractMove(0, 4, 0, 6);
+                        abstractMove(0, 7, 0, 5);
+                        pieces[20]->sethm();
+                        pieces[23]->sethm();
+                    }
+                }else{
                     wrong_move = true;
                 }
-            }
-            else{
+            }else{
                 wrong_move = true;
             }
-        }
-        else{
+        }else{
             wrong_move = true;
         }
     }
     return wrong_move;
 }
-bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
-{
+bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1){
     bool I_moved = false;
     bool wrong_move = false;
     int p_moved_value = p_moved;
-    if (turn == 1)
-    {
+    if (turn == 1){
         int bkx = pieces[20]->getx();
         int bky = pieces[20]->gety();
-        if (pieces[id1]->getcolor() == turn)
-        {
-            if (y1 == j && (x1 + 1 == i || x1 + 2 == i && x1 == 1)) //forward mvt
-            {
-                if (Board[i][j] == 50)
-                {
-                    if (x1 + 2 == i && x1 == 1) //2 square
-                    {
+        if (pieces[id1]->getcolor() == turn){
+            if (y1 == j && (x1 + 1 == i || x1 + 2 == i && x1 == 1)){ //forward mvt
+                if (Board[i][j] == 50){
+                    if (x1 + 2 == i && x1 == 1){ //2 square
                         setpmoved(id1);
-                    }
-                    else
-                    {
+                    }else{
                         setpmoved(100);
                     }
                     abstractMove(x1, y1, i, j);
-                    if (king_in_check(bkx, bky))
-                    {
+                    if (king_in_check(bkx, bky)){
                         abstractMove(i, j, x1, y1);
                         wrong_move = true;
                         setpmoved(p_moved_value);
-                    }
-                    else if (test== true){
+                    }else if (test== true){
                         abstractMove(i, j, x1, y1);
                         setpmoved(p_moved_value);
-                    }
-                    else
-                    {
+                    }else{
                         I_moved = true;
                     }
-                }
-                else{
+                }else{
                     wrong_move = true;
                 }
-            }
-            else if (abs(j - y1) == 1 && abs(i - x1) == 1) //eat
-            {
+            }else if (abs(j - y1) == 1 && abs(i - x1) == 1){ //eat
                 if (Board[i][j] == 50){ //en passant?
                     int id2 = Board[i - 1][j];
                     if (id2 == p_moved){
                         abstractMove(x1, y1, i, j);
                         Board[i - 1][j] = 50;
-                        if (king_in_check(bkx, bky))
-                        {
+                        if (king_in_check(bkx, bky)){
                             abstractMove(i, j, x1, y1);
                             Board[i - 1][j] = id2;
                             wrong_move=true;
-                        }
-                        else if (test==true){
+                        }else if (test==true){
                             abstractMove(i, j, x1, y1);
                             Board[i - 1][j] = id2;
-                        }
-                        else
-                        {
+                        }else{
                             I_moved = true;
                             setpmoved(100);
                         }
-                    }
-                    else
-                    {
+                    }else{
                         wrong_move = true;
                     }
-                }
-                else if (Board[i][j] < 16) //not en passant
-                {
+                }else if (Board[i][j] < 16){ //not en passant
                     int p = Board[i][j];
                     abstractMove(x1, y1, i, j);
-                    if (king_in_check(bkx, bky))
-                    {
+                    if (king_in_check(bkx, bky)){
                         abstractMove(i, j, x1, y1);
                         Board[i][j] = p;
                         wrong_move = true;
-                    }
-                    else if  (test==true){
+                    }else if  (test==true){
                         abstractMove(i, j, x1, y1);
                         Board[i][j] = p;
-                    }
-                    else
-                    {   
+                    }else{   
                         I_moved=true;
                         setpmoved(100);
                     }
                 }
-            }
-            else{
+            }else{
                 wrong_move = true;
             }
             if (I_moved && i == 7){
@@ -930,106 +814,74 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                     promo = true;
                 }
             }
-        }
-        else{
+        }else{
             wrong_move = true;
         }
-    }
-    else//white
-    {
+    }else{ // white
         int wkx = pieces[4]->getx();
         int wky = pieces[4]->gety();
-        if (pieces[id1]->getcolor() == turn)
-        {
-            if (y1 == j && (x1 - 1 == i || x1 - 2 == i && x1 == 6)) //forward mvt
-            {
-                if (Board[i][j] == 50)
-                {
-                    if (x1 - 2 == i && x1 == 6) //2 square
-                    {
+        if (pieces[id1]->getcolor() == turn){
+            if (y1 == j && (x1 - 1 == i || x1 - 2 == i && x1 == 6)){ //forward mvt
+                if (Board[i][j] == 50){
+                    if (x1 - 2 == i && x1 == 6){ //2 square
                         setpmoved(id1);
-                    }
-                    else
-                    {
+                    }else{
                        setpmoved (100);
                     }
                     abstractMove(x1, y1, i, j);
-                    if (king_in_check(wkx, wky))
-                    {
+                    if (king_in_check(wkx, wky)){
                         abstractMove(i, j, x1, y1);
                         wrong_move = true;
                         setpmoved(p_moved_value);
-                    }
-                    else if (test==true){
+                    }else if (test==true){
                         abstractMove(i, j, x1, y1);
                         setpmoved(p_moved_value);
-                    }
-                    else
-                    {
+                    }else{
                         I_moved = true;
                     }
-                }
-                else{
+                }else{
                     wrong_move = true;
                 }
-
-            }
-            else if (abs(j - y1) == 1 && x1 - i == 1) //eat
-            {
-                if (Board[i][j] == 50) //en passat
-                {
+            }else if (abs(j - y1) == 1 && x1 - i == 1){ //eat
+                if (Board[i][j] == 50){ //en passat
                     int id2 = Board[i + 1][j];
-                    if (id2 == p_moved)
-                    {
+                    if (id2 == p_moved){
                         abstractMove(x1, y1, i, j);
                         Board[i + 1][j] = 50;
-                        if (king_in_check(wkx, wky))
-                        {
+                        if (king_in_check(wkx, wky)){
                             abstractMove(i, j, x1, y1);
                             Board[i + 1][j] = id2;
                             wrong_move = true;
-                        }
-                        else if (test==true){
+                        }else if (test==true){
                             abstractMove(i, j, x1, y1);
                             Board[i + 1][j] = id2;
                             setpmoved(p_moved_value);
-                        }
-                        else
-                        {
+                        }else{
                             I_moved = true;
                             setpmoved(100);
                         }
-                    }
-                    else
-                    {
+                    }else{
                         wrong_move = true;
                     }
-                }
-                else if (Board[i][j] > 15 && Board[i][j] < 32) //not en passant
-                {
+                }else if (Board[i][j] > 15 && Board[i][j] < 32){ //not en passant
                     int p = Board[i][j];
                     abstractMove(x1, y1, i, j);
-                    if (king_in_check(wkx, wky))
-                    {
+                    if (king_in_check(wkx, wky)){
                         abstractMove(i, j, x1, y1);
                         Board[i][j] = p;
                         wrong_move = true;
-                    }
-                    else if (test==true){
+                    }else if (test==true){
                         abstractMove(i, j, x1, y1);
                         Board[i][j] =p ;
                         setpmoved(p_moved_value);
 
-                    }
-                    else
-                    {
+                    }else{
                         pieces[id1]->sethm();
                         setpmoved(100);
                         I_moved = true;
                     }
                 }
-            }
-            else{
+            }else{
                 wrong_move = true;
             }
             if (I_moved && i == 0){
@@ -1037,25 +889,21 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1)
                     promo = true;
                 }
             }
-        }
-        else{
+        }else{
         wrong_move = true;
         }
-    }
-    
+    } 
     return wrong_move;
 }
 void Game::switchTurn(){
     if (turn == 0){
         turn = 1;
-    }
-    else{
+    }else{
         turn = 0;
     }
 }
 bool Game:: move (int x1, int y1, int i, int j){
     int id1 = Board[x1][y1];
-
     int wkx = pieces[4]->getx();
     int wky = pieces[4]->gety();
     int bkx = pieces[20]->getx();
@@ -1063,20 +911,16 @@ bool Game:: move (int x1, int y1, int i, int j){
     bool wrong_move = false;
     if (id1 == 50){ // initial square is empty
         wrong_move = true;
-    }
-    else if(x1 == i && y1 == j){ // same square selected
+    }else if(x1 == i && y1 == j){ // same square selected
         wrong_move = true;
-    }
-    else {
+    }else{
         if (typeid(*pieces[id1]).name() == typeid(*testp).name()){ // pawn selected
             if (In_Between_pieces(x1,y1,i,j) == false){
                 wrong_move = pawn_mouvement(x1, y1, i, j, id1);
-            }
-            else{
+            }else{
                 wrong_move == true;
             }
-        }
-        else if (typeid(*pieces[id1]).name() == typeid(*testk).name() && (abs(y1 - j) == 3 || abs(y1 - j) == 4)){ //caslte
+        }else if (typeid(*pieces[id1]).name() == typeid(*testk).name() && (abs(y1 - j) == 3 || abs(y1 - j) == 4)){ //caslte
             wrong_move = castle(i, j);
         }else{
             vector<int> square_f = {i,j};
