@@ -34,7 +34,6 @@ Game::Game()
     Pawn *bpf = new Pawn(1, 5, 1, 29, 'W');
     Pawn *bpg = new Pawn(1, 6, 1, 30, 'W');
     Pawn *bph = new Pawn(1, 7, 1, 31, 'W');
-    std::cout<<"newww"<<std::endl;
     pieces.push_back(wra);
     pieces.push_back(wnb);
     pieces.push_back(wbc);
@@ -159,7 +158,7 @@ Game::Game()
 
             ////start drag////
             if (e.type == Event::MouseButtonPressed){ 
-                if (e.key.code == Mouse::Left){
+                if (e.key.code == Mouse::Left){ // left click
                     colorSquares();
                     for(int i=0;i<32;i++){
                         if (f[i].getGlobalBounds().contains(pos.x,pos.y)){
@@ -168,6 +167,36 @@ Game::Game()
                             dx=pos.x - f[i].getPosition().x;
                             dy=pos.y - f[i].getPosition().y;
                             oldPosCords  =  Vector2f {pieces[i]->gety(),pieces[i]->getx()};
+                        }
+                    }
+                }else if (e.key.code == Mouse::Right){ // right click
+                    if(isMove){ //undo drag
+                        isMove=false;
+                        colorSquares();
+                        loadPosition();
+                    }
+
+                    ////highlight/unhighlight square////
+                    else{
+                        int i = 0;
+                        for(int j = 0;j<8;j++){
+                            for(int k = 0;k<8;k++){
+                                if (squares[i].getGlobalBounds().contains(pos.x + offset.x,pos.y + offset.y)){
+                                    if(highlighted_squares[i] == 1){
+                                        highlighted_squares[i] = 0;
+                                        if((j+k)%2 == 0){
+                                            squares[i].setColor(light_square_color);
+                                        }else{
+                                            squares[i].setColor(dark_square_color);
+                                        }
+
+                                    }else{
+                                        squares[i].setColor(sf::Color(255, 200, 71));
+                                        highlighted_squares[i] = 1;
+                                    }
+                                }
+                                i++;
+                            }
                         }
                     }
                 }
@@ -195,7 +224,6 @@ Game::Game()
                             promoTh.join();
                             char c = getpchoice();
                             Promotion(newPosCords.x,newPosCords.y,c);
-                            showBoard();
                             setpchoice('a');
                             promo = false;
                             loadPosition();
@@ -284,46 +312,10 @@ Game::Game()
                 }
             }
 
-            ////left click////
-            if (e.type == Event::MouseButtonPressed){ 
-                if (e.key.code == Mouse::Right){
-                    if(isMove){ //undo drag
-                        isMove=false;
-                        colorSquares();
-                        loadPosition();
-                    }
-
-                    ////highlight/unhighlight square////
-                    else{ 
-                        int i = 0;
-                        for(int j = 0;j<8;j++){
-                            for(int k = 0;k<8;k++){
-                                if (squares[i].getGlobalBounds().contains(pos.x + offset.x,pos.y + offset.y)){
-                                    if(highlighted_squares[i] == 1){
-                                        highlighted_squares[i] = 0;
-                                        if((j+k)%2 == 0){
-                                            squares[i].setColor(light_square_color);
-                                        }else{
-                                            squares[i].setColor(dark_square_color);
-                                        }
-
-                                    }else{
-                                        squares[i].setColor(sf::Color(255, 200, 71));
-                                        highlighted_squares[i] = 1;
-                                    }
-                                }
-                                i++;
-                            }
-                        }
-                    }
-                }
-            } 
-
             ////drag////
             if (isMove) {
                 f[n].setPosition(pos.x-dx,pos.y-dy);
                 
-
                 ////target square highlight////
                 if(pieces[n]->getcolor() == turn){
                     int x = pieces[n]->getx();
@@ -1242,7 +1234,7 @@ void selectChoice(Game g){ // promotion choice select thread
         Event e;
         while (promowin.pollEvent(e)){
             if (e.type == Event::Closed){
-                promowin.close();
+                continue;
             }
             if (e.type == Event::MouseButtonPressed){ // choice select
                 if (e.key.code == Mouse::Left){
