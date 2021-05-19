@@ -55,7 +55,6 @@ public:
     void loadPosition();
     int getTurn(){return turn;}
     vector<vector<int>> target_Squares(int, int);
-    vector<vector<int>> target_Pieces(int, int);
     vector<vector<int>> global_Targets_List();
     vector<vector<int>> white_Targets_Squares();
     vector<vector<int>> black_Targets_Squares();
