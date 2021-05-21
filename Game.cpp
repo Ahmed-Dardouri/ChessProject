@@ -123,7 +123,7 @@ Game::Game(){
     
     
     int k = 0;
-    for (int i =0;i <8;i++){
+    for (int i =0;i <8;i++){ // put squares
         for(int j = 0;j<8;j++){
             squares[k].setTexture(chover);
             squares[k].setPosition(size*i,size*j);
@@ -139,7 +139,6 @@ Game::Game(){
     }
     bool isMove=false;
     float dx=0, dy=0;
-    Vector2f oldPos,newPos;
     Vector2f oldPosCords;
     Vector2f newPosCords;
     int n=0;
@@ -155,9 +154,8 @@ Game::Game(){
             }
             /////drag and drop///////
 
-            ////start drag////
             if (e.type == Event::MouseButtonPressed){ 
-                if (e.key.code == Mouse::Left){ // left click
+                if (e.key.code == Mouse::Left){ // left click //start drag
                     colorSquares();
                     for(int i=0;i<32;i++){
                         if (f[i].getGlobalBounds().contains(pos.x,pos.y)){
@@ -209,10 +207,7 @@ Game::Game(){
                     isMove=false;
                     colorSquares();
                     Vector2f p = f[n].getPosition() + Vector2f(size/2,size/2); // offset for placing pieces in center of square
-                    newPos = Vector2f( size*int(p.x/size), size*int(p.y/size)); // piece position in pixels centered in square
-                    newPosCords.x = newPos.y/size;
-                    newPosCords.y = newPos.x/size;
-                    
+                    newPosCords = Vector2f(int(p.y/size),int(p.x/size)); // piece position in pixels centered in square
                     bool lMove = move(oldPosCords.y,oldPosCords.x,newPosCords.x,newPosCords.y); // make the move
                     loadPosition(); // shows move result when piece is dropped
                     if(lMove){
@@ -232,7 +227,7 @@ Game::Game(){
                             int wkx = pieces[4]->getx();
                             int wky = pieces[4]->gety();
                             if (king_in_check(wkx,wky)){
-                                check_overlay.setPosition(wky*size -1,wkx*size-1);
+                                check_overlay.setPosition(wky*size,wkx*size);
                                 check_overlay.move(offset);
                                 sc.play();
                             }else{
@@ -381,10 +376,12 @@ Game::Game(){
                 }
             } 
             window.draw(f[n]);// draws dragged piece over other pieces
+
             for(int i=0;i<32;i++) { //pieces remove offset
                 f[i].move(-offset);
             }
             window.display();
+
         }else{ //game is over
             for(int i=0;i<32;i++) { //remove pieces (prevent movement after game is over)
                 f[i].setPosition(-100,-100);
@@ -875,11 +872,7 @@ bool Game::pawn_mouvement(int x1, int y1, int i, int j, int id1){
     return wrong_move;
 }
 void Game::switchTurn(){
-    if (turn == 0){
-        turn = 1;
-    }else{
-        turn = 0;
-    }
+    turn = 1 - turn;
 }
 bool Game:: move (int x1, int y1, int i, int j){
     int id1 = Board[x1][y1];
@@ -1012,7 +1005,7 @@ void Game::loadPosition(){ // loads texture and pieces positions from board
     }
     for (int i = 0; i <32;i++){
         if(ids[i]>0){
-            f[i].setPosition(-100,-100); // remove taken pieces from the board
+            f[i].setPosition(-400,-400); // remove taken pieces from the board
         }
     }
 }
@@ -1049,7 +1042,6 @@ void selectChoice(Game g){ // promotion choice select thread
     }
     for(int i =0;i<4;i++){
         hover[i].setTexture(bg);
-        hover[i].setColor(sf::Color(36, 186, 255,0));
         hover[i].setPosition(size*i,0);
     }
     while (promowin.isOpen()){
@@ -1087,7 +1079,7 @@ void selectChoice(Game g){ // promotion choice select thread
             }
             for(int i=0;i<4;i++){ //mouse hover effect
                 if (choices[i].getGlobalBounds().contains(mpos.x,mpos.y)){
-                    hover[i].setColor(sf::Color(36, 186, 255,70));
+                    hover[i].setColor(sf::Color(36, 186, 255));
                 }else{
                     hover[i].setColor(sf::Color(255,255,255));
                 }
