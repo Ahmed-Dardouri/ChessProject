@@ -12,7 +12,7 @@ Execution in Linux:
 The game comes also with a console version that you can find in consoleBranch with its Makefile.
 You can follow the same steps to launch the game.
 
-note: the code was originally created for the console then it was modified to adapt well the the sfml language.
+note: the code was originally created for the console then it was modified for the sfml GUI.
 
 Team: 
   Manel Grira 
